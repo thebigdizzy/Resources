@@ -29,12 +29,12 @@ int main(int argc, char* argv[]){
 #endif
 
 #if defined(__linux__)
-cout << "Running on Linux" << endl;
-
+	cout << "Running on Linux" << endl;
+	cout << "Added on Linux" << endl;
 #endif
 
 #if defined(__APPLE__)
-cout << "Running on Apple" << endl;
+	cout << "Running on Apple" << endl;
 #endif
 
 	SDL_Window *window;                    // Declare a pointer
