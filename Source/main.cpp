@@ -36,6 +36,7 @@ int main(int argc, char* argv[]){
 
 #if defined(__APPLE__)
 	cout << "Running on Apple" << endl;
+	cout << "Added on Apple" << endl;
 #endif
 
 	SDL_Window *window;                    // Declare a pointer
@@ -90,7 +91,7 @@ int main(int argc, char* argv[]){
 	GameState gameState = MENU;
 
 	// bool value to control movement through the states
-	bool menu, instructions, players1, players2, win, lose, quit;
+	bool menu = false, instructions = false, players1 = false, players2 = false, win = false, lose = false, quit = false;
 
 
 	// The window is open: could enter program loop here (see SDL_PollEvent())
