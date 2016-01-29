@@ -388,6 +388,192 @@ int main(int argc, char* argv[]){
 	//********** End Quit Over**********
 
 
+	// ************** END MAIN MENU ****************
+
+		//********** Create Instructions Menu - Start **********
+
+		//********** INSTRUCTIONS GRAPHICS - START **********
+
+			string instructionsTextPath = s_cwd_images + "/InstructionsText.psd";
+
+			// create a SD surface to hold the Instructions Title image
+			surface = IMG_Load(instructionsTextPath.c_str());
+
+			// create a SDL texture
+			SDL_Texture *instructionText;
+
+			// place surface info the texture bkgd1
+			instructionText = SDL_CreateTextureFromSurface(renderer, surface);
+
+			// create SDL Rectangle for the Instructions graphic
+			SDL_Rect instructionTextPos;
+
+			// set the X, Y, W, and H for the Rectangle
+			instructionTextPos.x = 26;
+			instructionTextPos.y = 336;
+			instructionTextPos.w = 980;
+			instructionTextPos.h = 144;
+
+			// free the SDL surface
+			//SDL_FreeSurface (surface);
+
+			//********** INSTRUCTIONS GRAPHICS - END **********
+
+			//********** Create Main Menu Normal **********
+
+			string MENU_Npath = s_cwd_images + "/MainMenu_n.psd";
+
+			// create a SD surface to hold the menu image
+			surface = IMG_Load(MENU_Npath.c_str());
+
+			// create a SDL texture
+			SDL_Texture *MainMenu_n;
+
+			// place surface info the texture menu
+			MainMenu_n = SDL_CreateTextureFromSurface(renderer, surface);
+
+			// create SDL Rectangle for the menu graphic
+			SDL_Rect Menu_nPos;
+
+			// set the X, Y, W, and H for the Rectangle
+			Menu_nPos.x = 30;
+			Menu_nPos.y = 716;
+			Menu_nPos.w = 400;
+			Menu_nPos.h = 22;
+
+			//********** End Main Menu Normal **********
+
+			//********** Create Main Menu Over **********
+
+			string MENU_Opath = s_cwd_images + "/MainMenu_o.psd";
+
+			// create a SD surface to hold the menu image
+			surface = IMG_Load(MENU_Opath.c_str());
+
+			// create a SDL texture
+			SDL_Texture *Menu_o;
+
+			// place surface info the texture menu
+			Menu_o = SDL_CreateTextureFromSurface(renderer, surface);
+
+			// create SDL Rectangle for the menu graphic
+			SDL_Rect Menu_oPos;
+
+			// set the X, Y, W, and H for the Rectangle
+			Menu_oPos.x = 26;
+			Menu_oPos.y = 710;
+			Menu_oPos.w = 412;
+			Menu_oPos.h = 36;
+
+		//********** End Main Menu Over**********
+
+		//********** Create WIN - Start **********
+
+		//********** WIN GRAPHICS - START **********
+
+			string WINPath = s_cwd_images + "/winTitle.psd";
+
+			// create a SD surface to hold the Instructions Title image
+			surface = IMG_Load(WINPath.c_str());
+
+			// create a SDL texture
+			SDL_Texture *winScene;
+
+			// place surface info the texture bkgd1
+			winScene = SDL_CreateTextureFromSurface(renderer, surface);
+
+			// create SDL Rectangle for the Instructions graphic
+			SDL_Rect winPos;
+
+			// set the X, Y, W, and H for the Rectangle
+			winPos.x = 330;
+			winPos.y = 96;
+			winPos.w = 350;
+			winPos.h = 73;
+
+			// free the SDL surface
+			//SDL_FreeSurface (surface);
+
+			//********** WIN GRAPHICS - END **********
+
+			//********** Create PLAY AGAIN Normal **********
+
+			string PLAY_Npath = s_cwd_images + "/Play_n.psd";
+
+			// create a SD surface to hold the menu image
+			surface = IMG_Load(PLAY_Npath.c_str());
+
+			// create a SDL texture
+			SDL_Texture *PLAY_n;
+
+			// place surface info the texture menu
+			PLAY_n = SDL_CreateTextureFromSurface(renderer, surface);
+
+			// create SDL Rectangle for the menu graphic
+			SDL_Rect PLAY_nPos;
+
+			// set the X, Y, W, and H for the Rectangle
+			PLAY_nPos.x = 30;
+			PLAY_nPos.y = 716;
+			PLAY_nPos.w = 400;
+			PLAY_nPos.h = 22;
+
+			//********** End PLAY AGAIN Normal **********
+
+			//********** Create PLAY AGAIN Over **********
+
+			string PLAY_Opath = s_cwd_images + "/Play_o.psd";
+
+			// create a SD surface to hold the menu image
+			surface = IMG_Load(MENU_Opath.c_str());
+
+			// create a SDL texture
+			SDL_Texture *PLAY_o;
+
+			// place surface info the texture menu
+			PLAY_o = SDL_CreateTextureFromSurface(renderer, surface);
+
+			// create SDL Rectangle for the menu graphic
+			SDL_Rect PLAY_oPos;
+
+			// set the X, Y, W, and H for the Rectangle
+			PLAY_oPos.x = 26;
+			PLAY_oPos.y = 710;
+			PLAY_oPos.w = 412;
+			PLAY_oPos.h = 36;
+
+		//********** End PLAY AGAIN Over**********
+
+			//********** Create LOSE - Start **********
+
+		//********** LOSE GRAPHICS - START **********
+
+			string LOSEPath = s_cwd_images + "/loseTitle.psd";
+
+			// create a SD surface to hold the Instructions Title image
+			surface = IMG_Load(LOSEPath.c_str());
+
+			// create a SDL texture
+			SDL_Texture *loseScene;
+
+			// place surface info the texture bkgd1
+			loseScene = SDL_CreateTextureFromSurface(renderer, surface);
+
+			// create SDL Rectangle for the Instructions graphic
+			SDL_Rect losePos;
+
+			// set the X, Y, W, and H for the Rectangle
+			losePos.x = 330;
+			losePos.y = 96;
+			losePos.w = 350;
+			losePos.h = 73;
+
+			// free the SDL surface
+			//SDL_FreeSurface (surface);
+
+	//********** LOSE GRAPHICS - END **********
+
+
 	//********** Create Cursor **********
 
 	// create cursor
@@ -570,6 +756,12 @@ int main(int argc, char* argv[]){
 
 		while(instructions)
 		{
+
+			// set up frame rate for the section, or CASE
+			thisTime = SDL_GetTicks();
+			deltaTime =  (float)(thisTime - lastTime)/1000;
+			lastTime = thisTime;
+
 			// check for input events
 			if(SDL_PollEvent(&event)){
 				// check to see if the SDL Window is closed - player clicks X in the Window
@@ -592,6 +784,38 @@ int main(int argc, char* argv[]){
 					break;
 				}
 			}
+
+			// update
+			UpdateBackground();
+
+			// Start Drawing
+
+			// Clear SDL renderer
+			SDL_RenderClear(renderer);
+
+			// Draw the bkgd1 image
+			SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+
+			// Draw the bkgd2 image
+			SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+			// Draw the title image
+			SDL_RenderCopy(renderer, title, NULL, &titlePos);
+
+			// Draw the instructions graphic image
+			SDL_RenderCopy(renderer, instructionText, NULL, &instructionTextPos);
+
+			// Draw the menu_n image
+			//SDL_RenderCopy(renderer, MainMenu_n, NULL, &Menu_nPos);
+
+			// Draw the menu_o image
+			SDL_RenderCopy(renderer, Menu_o, NULL, &Menu_oPos);
+
+			// Draw the cursor image
+			SDL_RenderCopy(renderer, cursor, NULL, &cursorPos);
+
+			// SDL Render present
+			SDL_RenderPresent(renderer);
 		}
 		break; // end instructions case
 
@@ -604,6 +828,12 @@ int main(int argc, char* argv[]){
 
 				while(players1)
 				{
+
+					// set up frame rate for the section, or CASE
+					thisTime = SDL_GetTicks();
+					deltaTime =  (float)(thisTime - lastTime)/1000;
+					lastTime = thisTime;
+
 					// check for input events
 					if(SDL_PollEvent(&event)){
 						// check to see if the SDL Window is closed - player clicks X in the Window
@@ -635,6 +865,27 @@ int main(int argc, char* argv[]){
 						default:break;
 						}
 					}
+
+					// update
+					UpdateBackground();
+
+					// Start Drawing
+
+					// Clear SDL renderer
+					SDL_RenderClear(renderer);
+
+					// Draw the bkgd1 image
+					SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+
+					// Draw the bkgd2 image
+					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+					// Draw the Player1_n image
+					SDL_RenderCopy(renderer, Player1_n, NULL, &Player1nPos);
+
+
+					// SDL Render present
+					SDL_RenderPresent(renderer);
 				}
 				break; // end main menu case
 
@@ -647,6 +898,12 @@ int main(int argc, char* argv[]){
 
 				while(players2)
 				{
+
+					// set up frame rate for the section, or CASE
+					thisTime = SDL_GetTicks();
+					deltaTime =  (float)(thisTime - lastTime)/1000;
+					lastTime = thisTime;
+
 					// check for input events
 					if(SDL_PollEvent(&event)){
 						// check to see if the SDL Window is closed - player clicks X in the Window
@@ -678,6 +935,27 @@ int main(int argc, char* argv[]){
 						default:break;
 						}
 					}
+
+					// update
+					UpdateBackground();
+
+					// Start Drawing
+
+					// Clear SDL renderer
+					SDL_RenderClear(renderer);
+
+					// Draw the bkgd1 image
+					SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+
+					// Draw the bkgd2 image
+					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+					// Draw the Player1_n image
+					SDL_RenderCopy(renderer, Player2_n, NULL, &Player2nPos);
+
+
+					// SDL Render present
+					SDL_RenderPresent(renderer);
 				}
 				break; // end main menu case
 
@@ -690,6 +968,12 @@ int main(int argc, char* argv[]){
 
 				while(win)
 				{
+
+					// set up frame rate for the section, or CASE
+					thisTime = SDL_GetTicks();
+					deltaTime =  (float)(thisTime - lastTime)/1000;
+					lastTime = thisTime;
+
 					// check for input events
 					if(SDL_PollEvent(&event)){
 						// check to see if the SDL Window is closed - player clicks X in the Window
@@ -721,6 +1005,33 @@ int main(int argc, char* argv[]){
 						default:break;
 						}
 					}
+
+					// update
+					UpdateBackground();
+
+					// Start Drawing
+
+					// Clear SDL renderer
+					SDL_RenderClear(renderer);
+
+					// Draw the bkgd1 image
+					SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+
+					// Draw the bkgd2 image
+					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+					// Draw the Win Scene image
+					SDL_RenderCopy(renderer, winScene, NULL, &winPos);
+
+					// Draw the Play Again N image
+					SDL_RenderCopy(renderer, PLAY_n, NULL, &PLAY_nPos);
+
+					// Draw the Play Again O image
+					SDL_RenderCopy(renderer, PLAY_o, NULL, &PLAY_oPos);
+
+					// SDL Render present
+					SDL_RenderPresent(renderer);
+
 				}
 				break; // end main menu case
 
@@ -733,6 +1044,12 @@ int main(int argc, char* argv[]){
 
 				while(lose)
 				{
+
+					// set up frame rate for the section, or CASE
+					thisTime = SDL_GetTicks();
+					deltaTime =  (float)(thisTime - lastTime)/1000;
+					lastTime = thisTime;
+
 					// check for input events
 					if(SDL_PollEvent(&event)){
 						// check to see if the SDL Window is closed - player clicks X in the Window
@@ -764,6 +1081,33 @@ int main(int argc, char* argv[]){
 						default:break;
 						}
 					}
+
+					// update
+					UpdateBackground();
+
+					// Start Drawing
+
+					// Clear SDL renderer
+					SDL_RenderClear(renderer);
+
+					// Draw the bkgd1 image
+					SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+
+					// Draw the bkgd2 image
+					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+
+					// Draw the Lose Scene image
+					SDL_RenderCopy(renderer, loseScene, NULL, &losePos);
+
+					// Draw the Play Again N image
+					SDL_RenderCopy(renderer, PLAY_n, NULL, &PLAY_nPos);
+
+					// Draw the Play Again O image
+					SDL_RenderCopy(renderer, PLAY_o, NULL, &PLAY_oPos);
+
+					// SDL Render present
+					SDL_RenderPresent(renderer);
+
 				}
 				break; // end main menu case
 		default:break;
