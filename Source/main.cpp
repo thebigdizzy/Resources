@@ -11,11 +11,16 @@
 
 #if defined(__linux__)
 #include "SDL2/SDL.h"
+#include "SDL2/SDL_image.h"
 #endif
 
 #if defined(__APPLE__)
 #include "SDL2/SDL.h"
 #include "SDL2_image/SDL_image.h"
+#endif
+
+#if defined(__linux__)
+#include <unistd.h>
 #endif
 
 #include <stdio.h>
@@ -88,11 +93,18 @@ int main(int argc, char* argv[]){
 #if defined(__linux__)
 	cout << "Running on Linux" << endl;
 	cout << "Added on Linux" << endl;
+
+	// Get the current working directory
+		string s_cwd(getcwd(NULL, 0));
+
+		// create a string linking to the mac's images folder
+		string s_cwd_images = s_cwd + "/Resources/Images";
 #endif
 
 #if defined(__APPLE__)
 	cout << "Running on Apple" << endl;
 	cout << "Added on Apple" << endl;
+
 	// Get the current working directory
 	string s_cwd(getcwd(NULL, 0));
 
@@ -963,7 +975,7 @@ int main(int argc, char* argv[]){
 				win = true;
 				cout << "The Game State is Win Screen" << endl;
 				cout << "Press the A Button for Main Menu" << endl;
-				cout << "Press the B Button for Quit" << endl;
+				cout << "Press the B Button for Replay" << endl;
 				cout << endl;
 
 				while(win)
@@ -998,7 +1010,7 @@ int main(int argc, char* argv[]){
 								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
 								{
 									win = false;
-									quit = true;
+									gameState = PLAYERS1;
 								}
 							}
 							break;
@@ -1029,6 +1041,12 @@ int main(int argc, char* argv[]){
 					// Draw the Play Again O image
 					SDL_RenderCopy(renderer, PLAY_o, NULL, &PLAY_oPos);
 
+					// Draw the Menu N image
+					SDL_RenderCopy(renderer, MainMenu_n, NULL, &Menu_nPos);
+
+					// Draw the Menu O image
+					SDL_RenderCopy(renderer, Menu_o, NULL, &Menu_oPos);
+
 					// SDL Render present
 					SDL_RenderPresent(renderer);
 
@@ -1039,12 +1057,11 @@ int main(int argc, char* argv[]){
 				lose = true;
 				cout << "The Game State is Lose Screen" << endl;
 				cout << "Press the A Button for Main Menu" << endl;
-				cout << "Press the B Button for Quit" << endl;
+				cout << "Press the B Button for Replay" << endl;
 				cout << endl;
 
 				while(lose)
 				{
-
 					// set up frame rate for the section, or CASE
 					thisTime = SDL_GetTicks();
 					deltaTime =  (float)(thisTime - lastTime)/1000;
@@ -1074,7 +1091,7 @@ int main(int argc, char* argv[]){
 								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
 								{
 									lose = false;
-									quit = true;
+									gameState = PLAYERS1;
 								}
 							}
 							break;
@@ -1104,6 +1121,12 @@ int main(int argc, char* argv[]){
 
 					// Draw the Play Again O image
 					SDL_RenderCopy(renderer, PLAY_o, NULL, &PLAY_oPos);
+
+					// Draw the Menu N image
+					SDL_RenderCopy(renderer, MainMenu_n, NULL, &Menu_nPos);
+
+					// Draw the Menu O image
+					SDL_RenderCopy(renderer, Menu_o, NULL, &Menu_oPos);
 
 					// SDL Render present
 					SDL_RenderPresent(renderer);
