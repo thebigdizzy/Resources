@@ -33,7 +33,6 @@
 #include <iostream>
 using namespace std;
 
-
 // CODE FOR FRAME RATE INDEPENDENCE
 float deltaTime = 0.0f;
 int thisTime = 0;
@@ -59,33 +58,33 @@ void UpdateBackground(float deltaTime)
 {
 	// Update
 
-					// Update background 1
-					BG1pos_Y += (bkgdSpeed * 1) * deltaTime;
+	// Update background 1
+	BG1pos_Y += (bkgdSpeed * 1) * deltaTime;
 
-					// set the new bkgd1 position
-					bkgd1Pos.y = (int)(BG1pos_Y + 0.5f);
+	// set the new bkgd1 position
+	bkgd1Pos.y = (int)(BG1pos_Y + 0.5f);
 
-					// RESET WHEN OFF THE BOTTOM OF THE SCREEN
-					if(bkgd1Pos.y >= 768){
+	// RESET WHEN OFF THE BOTTOM OF THE SCREEN
+	if(bkgd1Pos.y >= 768){
 
-						bkgd1Pos.y = -768;
+		bkgd1Pos.y = -768;
 
-						BG1pos_Y = bkgd1Pos.y;
-					}
+		BG1pos_Y = bkgd1Pos.y;
+	}
 
-					// Update background 2
-					BG2pos_Y += (bkgdSpeed * 1) * deltaTime;
+	// Update background 2
+	BG2pos_Y += (bkgdSpeed * 1) * deltaTime;
 
-					// set the new bkgd2 position
-					bkgd2Pos.y = (int)(BG2pos_Y + 0.5f);
+	// set the new bkgd2 position
+	bkgd2Pos.y = (int)(BG2pos_Y + 0.5f);
 
-					// RESET WHEN OFF THE BOTTOM OF THE SCREEN
-					if(bkgd2Pos.y >= 768){
+	// RESET WHEN OFF THE BOTTOM OF THE SCREEN
+	if(bkgd2Pos.y >= 768){
 
-						bkgd2Pos.y = -768;
+		bkgd2Pos.y = -768;
 
-						BG2pos_Y = bkgd2Pos.y;
-					}
+		BG2pos_Y = bkgd2Pos.y;
+	}
 }
 
 const int JOYSTICK_DEAD_ZONE = 8000;
@@ -166,6 +165,10 @@ void UpdateCursor(float deltaTime) {
 bool players1Over = false, players2Over = false, instructionsOver = false,
 		quitOver = false, menuOver = false, playOver = false;
 
+// class header includes
+#include "player.h"
+
+
 int main(int argc, char* argv[]){
 
 #if defined(_WIN32) || (_WIN64)
@@ -229,6 +232,9 @@ int main(int argc, char* argv[]){
 
 	// create the renderer
 	renderer =  SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+	// ******************* CREATE PLAYERS - START **********************
+	Player player1 = Player(renderer, 0, s_cwd_images.c_str(), 250.0, 500.0);
 
 	//********** Create Background **********
 	string BKGDpath = s_cwd_images + "/Background.png";
@@ -752,11 +758,7 @@ int main(int argc, char* argv[]){
 		{
 		case MENU:
 			menu = true;
-			cout << "The Game State is Menu" << endl;
-			cout << "Press the A Button for Instructions" << endl;
-			cout << "Press the B Button for 1 Player Game" << endl;
-			cout << "Press the X Button for 2 Player Game" << endl;
-			cout << "Press the Y Button for Quit Game" << endl;
+
 			cout << endl;
 
 			while(menu)
@@ -886,9 +888,6 @@ int main(int argc, char* argv[]){
 
 		case INSTRUCTIONS:
 		instructions = true;
-		cout << "The Game State is Instructions" << endl;
-		cout << "Press the A Button for Main Menu" << endl;
-		cout << endl;
 
 		while(instructions)
 		{
@@ -971,10 +970,6 @@ int main(int argc, char* argv[]){
 
 		case PLAYERS1:
 				players1 = true;
-				cout << "The Game State is 1 Player" << endl;
-				cout << "Press the A Button for Win Screen" << endl;
-				cout << "Press the B Button for Lose Screen" << endl;
-				cout << endl;
 
 				while(players1)
 				{
@@ -1043,7 +1038,7 @@ int main(int argc, char* argv[]){
 					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
 
 					// Draw the Player1_n image
-					SDL_RenderCopy(renderer, Player1_n, NULL, &Player1nPos);
+					// SDL_RenderCopy(renderer, Player1_n, NULL, &Player1nPos);
 
 
 					// SDL Render present
@@ -1053,14 +1048,9 @@ int main(int argc, char* argv[]){
 
 		case PLAYERS2:
 				players2 = true;
-				cout << "The Game State is 2 Player" << endl;
-				cout << "Press the A Button for Win Screen" << endl;
-				cout << "Press the B Button for Lose Screen" << endl;
-				cout << endl;
 
 				while(players2)
 				{
-
 					// set up frame rate for the section, or CASE
 					thisTime = SDL_GetTicks();
 					deltaTime =  (float)(thisTime - lastTime)/1000;
@@ -1116,7 +1106,7 @@ int main(int argc, char* argv[]){
 					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
 
 					// Draw the Player1_n image
-					SDL_RenderCopy(renderer, Player2_n, NULL, &Player2nPos);
+					// SDL_RenderCopy(renderer, Player2_n, NULL, &Player2nPos);
 
 
 					// SDL Render present
@@ -1126,10 +1116,6 @@ int main(int argc, char* argv[]){
 
 		case WIN:
 				win = true;
-				cout << "The Game State is Win Screen" << endl;
-				cout << "Press the A Button for Main Menu" << endl;
-				cout << "Press the B Button for Replay" << endl;
-				cout << endl;
 
 				while(win)
 				{
@@ -1226,10 +1212,6 @@ int main(int argc, char* argv[]){
 
 		case LOSE:
 				lose = true;
-				cout << "The Game State is Lose Screen" << endl;
-				cout << "Press the A Button for Main Menu" << endl;
-				cout << "Press the B Button for Replay" << endl;
-				cout << endl;
 
 				while(lose)
 				{
