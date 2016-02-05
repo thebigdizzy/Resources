@@ -16,10 +16,10 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, float x, float
 	if(playerNum == 0)
 	{
 		// Create the player 1 texture
-		playerPath = filePath + "Player1.png";
+		playerPath = filePath + "/Player1.png";
 	} else {
 		// Create the player 2 texture
-		playerPath = filePath + "Player2.png";
+		playerPath = filePath + "/Player2.png";
 	}
 
 	// load the surface
@@ -41,7 +41,7 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, float x, float
 	SDL_QueryTexture(texture, NULL,NULL, &w, &h);
 
 	posRect.w = w;
-	posRect.h;
+	posRect.h = h;
 
 	// Set the movement floats to the players original X and Y
 	pos_X = x;
@@ -50,8 +50,113 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, float x, float
 	// set the xDir and yDir for the joysticks
 	xDir = 0;
 	yDir = 0;
-
 }
+
+// Player Joystick Button Method
+void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
+{
+	// if the player's number is 0 and the joystick button is from joystick 0
+	if(event.which == 0 && playerNum == 0)
+	{
+		// if A Button
+		if(event.button == 0)
+		{
+			cout << "Player 1 - Button A" << endl;
+		}
+	}
+
+	// if the player's number is 1 and the joystick button is from joystick 1
+	if(event.which == 1 && playerNum == 1)
+	{
+		// if A button
+		if (event.button == 0)
+		{
+			cout << "Player 2 - Button A" << endl;
+		}
+	}
+}
+
+// Player Joystick Axis Method
+void Player::OnControllerAxis(const SDL_ControllerAxisEvent event)
+{
+	// Axis movements and button presses both sent gere as SDL_ControllerAxisEvent structures
+
+	// if the player's number is 0 and the joystick axis is from joystick 0
+	if(event.which == 0 && playerNum == 0)
+	{
+		// X axis
+		if(event.axis == 0)
+		{
+			if(event.value < -JOYSTICK_DEAD_ZONE)
+			{
+				xDir = -1.0f; // LEFT
+			}
+			else if(event.value > JOYSTICK_DEAD_ZONE)
+			{
+				xDir = 1.0f; // RIGHT
+			}
+			else
+			{
+				xDir = 0.0f; // NONE
+			}
+		}
+
+			// Y axis
+			if(event.axis == 1)
+			{
+				if(event.value < -JOYSTICK_DEAD_ZONE)
+				{
+					yDir = -1.0f; // DOWN
+				}
+				else if(event.value > JOYSTICK_DEAD_ZONE)
+				{
+					yDir = 1.0f; // UP
+				}
+				else
+				{
+					yDir = 0.0f; // NONE
+				}
+			}
+		}
+
+	// if the player's number is 0 and the joystick axis is from joystick 0
+		if(event.which == 1 && playerNum == 1)
+		{
+			// X axis
+			if(event.axis == 0)
+			{
+				if(event.value < -JOYSTICK_DEAD_ZONE)
+				{
+					xDir = -1.0f; // LEFT
+				}
+				else if(event.value > JOYSTICK_DEAD_ZONE)
+				{
+					xDir = 1.0f; // RIGHT
+				}
+				else
+				{
+					xDir = 0.0f; // NONE
+				}
+			}
+
+				// Y axis
+				if(event.axis == 1)
+				{
+					if(event.value < -JOYSTICK_DEAD_ZONE)
+					{
+						yDir = -1.0f; // DOWN
+					}
+					else if(event.value > JOYSTICK_DEAD_ZONE)
+					{
+						yDir = 1.0f; // UP
+					}
+					else
+					{
+						yDir = 0.0f; // NONE
+					}
+				}
+			}
+	}
 
 void Player::Update(float deltaTime)
 {

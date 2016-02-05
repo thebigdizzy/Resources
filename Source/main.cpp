@@ -99,7 +99,7 @@ float pos_X, pos_Y;
 SDL_Rect cursorPos, activePos;
 
 // var from cursor speed
-int cursorSpeed = 400;
+int cursorSpeed = 300;
 
 void moveCursor(const SDL_ControllerAxisEvent event)
 {
@@ -114,7 +114,6 @@ void moveCursor(const SDL_ControllerAxisEvent event)
 				xDir = 0.0f;
 			}
 		}
-
 
 	if(event.axis == 1) {
 
@@ -235,6 +234,7 @@ int main(int argc, char* argv[]){
 
 	// ******************* CREATE PLAYERS - START **********************
 	Player player1 = Player(renderer, 0, s_cwd_images.c_str(), 250.0, 500.0);
+	Player player2 = Player(renderer, 1, s_cwd_images.c_str(), 750.0, 500.0);
 
 	//********** Create Background **********
 	string BKGDpath = s_cwd_images + "/Background.png";
@@ -716,6 +716,8 @@ int main(int argc, char* argv[]){
 
 /*
 	//The surface contained by the window
+
+
 	SDL_Surface* screenSurface = NULL;
 
 	//Get window surface
@@ -729,14 +731,14 @@ int main(int argc, char* argv[]){
 	SDL_UpdateWindowSurface(window);
 	*/
 
+	// ***** Turn on Game Controller Events
+		SDL_GameControllerEventState(SDL_ENABLE);
+
 	//***** Set up a Game Controller variable *****
-	SDL_GameController* gGameController = NULL;
+	SDL_GameController* gGameController0 = NULL;
 
 	//***** Open Game Controller*****
-	gGameController = SDL_GameControllerOpen(0);
-
-	// ***** Turn on Game Controller Events
-	SDL_GameControllerEventState(SDL_ENABLE);
+	gGameController0 = SDL_GameControllerOpen(0);
 
 	// ***** SDL Event to handle input
 	SDL_Event event;
@@ -749,7 +751,6 @@ int main(int argc, char* argv[]){
 
 	// bool value to control movement through the states
 	bool menu = false, instructions = false, players1 = false, players2 = false, win = false, lose = false, quit = false;
-
 
 	// The window is open: could enter program loop here (see SDL_PollEvent())
 	while (!quit)
@@ -988,30 +989,32 @@ int main(int argc, char* argv[]){
 							break;
 						}
 
-						switch(event.type){
+						switch(event.type)
+						{
 						case SDL_CONTROLLERBUTTONDOWN:
 							if(event.cdevice.which == 0)
 							{
-								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
+								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
 								{
 									players1 = false;
 									gameState = WIN;
 								}
-							}
-							if(event.cdevice.which == 0)
-							{
-								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
+
+								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
 								{
 									players1 = false;
 									gameState = LOSE;
 								}
+
+								// send button press info to player1
+								player1.OnControllerButton(event.cbutton);
 							}
 							break;
 
 						case SDL_CONTROLLERAXISMOTION:
-							moveCursor(event.caxis);
-							break;
 
+							player1.OnControllerAxis(event.caxis);
+							break;
 						default:break;
 						}
 					}
@@ -1019,12 +1022,12 @@ int main(int argc, char* argv[]){
 					// update
 					UpdateBackground(deltaTime);
 
-					// cursor update
-					UpdateCursor(deltaTime);
+					// update player1
+					player1.Update(deltaTime);
 
 					// check for cursor button collision
-					menuOver = SDL_HasIntersection(&activePos, &Menu_nPos);
-					playOver = SDL_HasIntersection(&activePos, &PLAY_nPos);
+					// menuOver = SDL_HasIntersection(&activePos, &Menu_nPos);
+					// playOver = SDL_HasIntersection(&activePos, &PLAY_nPos);
 
 					// Start Drawing
 
@@ -1037,9 +1040,8 @@ int main(int argc, char* argv[]){
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
 
-					// Draw the Player1_n image
-					// SDL_RenderCopy(renderer, Player1_n, NULL, &Player1nPos);
-
+					// draw player
+					player1.Draw(renderer);
 
 					// SDL Render present
 					SDL_RenderPresent(renderer);
@@ -1069,23 +1071,31 @@ int main(int argc, char* argv[]){
 						case SDL_CONTROLLERBUTTONDOWN:
 							if(event.cdevice.which == 0)
 							{
-								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
+								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
 								{
 									players2 = false;
 									gameState = WIN;
 								}
-							}
-							if(event.cdevice.which == 0)
-							{
-								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_B)
+								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
 								{
 									players2 = false;
 									gameState = LOSE;
 								}
 							}
+
+							// send button press info to player 1
+							player1.OnControllerButton(event.cbutton);
+
+							// send button press info to player 2
+							player2.OnControllerButton(event.cbutton);
+
 							break;
 						case SDL_CONTROLLERAXISMOTION:
-							moveCursor(event.caxis);
+							// send axis info to player 1
+							player1.OnControllerAxis(event.caxis);
+
+							// send button press info to plaeyr 2
+							player2.OnControllerAxis(event.caxis);
 							break;
 						default:break;
 						}
@@ -1093,6 +1103,12 @@ int main(int argc, char* argv[]){
 
 					// update
 					UpdateBackground(deltaTime);
+
+					// update player 1
+					player1.Update(deltaTime);
+
+					// Update Player 2
+					player2.Update(deltaTime);
 
 					// Start Drawing
 
@@ -1108,6 +1124,11 @@ int main(int argc, char* argv[]){
 					// Draw the Player1_n image
 					// SDL_RenderCopy(renderer, Player2_n, NULL, &Player2nPos);
 
+					// draw player 1
+					player1.Draw(renderer);
+
+					// draw player 2
+					player2.Draw(renderer);
 
 					// SDL Render present
 					SDL_RenderPresent(renderer);
