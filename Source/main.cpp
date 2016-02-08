@@ -189,7 +189,7 @@ int main(int argc, char* argv[]){
 	string s_cwd(getcwd(NULL, 0));
 
 	// create a string linking to the mac's images folder
-	string s_cwd_images = s_cwd + "/Resources/Images";
+	string s_cwd_images = s_cwd + "/Resources/Images/";
 #endif
 
 #if defined(__APPLE__)
@@ -200,7 +200,7 @@ int main(int argc, char* argv[]){
 	string s_cwd(getcwd(NULL, 0));
 
 	// create a string linking to the mac's images folder
-	string s_cwd_images = s_cwd + "/Resources/Images";
+	string s_cwd_images = s_cwd + "/Resources/Images/";
 
 	// test
 	cout << s_cwd_images << endl;
@@ -237,7 +237,7 @@ int main(int argc, char* argv[]){
 	Player player2 = Player(renderer, 1, s_cwd_images.c_str(), 750.0, 500.0);
 
 	//********** Create Background **********
-	string BKGDpath = s_cwd_images + "/Background.png";
+	string BKGDpath = s_cwd_images + "Background.png";
 
 	// create a SD surface to hold the background image
 	SDL_Surface *surface = IMG_Load(BKGDpath.c_str());
@@ -277,7 +277,7 @@ int main(int argc, char* argv[]){
 
 	//********** Create Title **********
 
-	string TITLEpath = s_cwd_images + "/Title.png";
+	string TITLEpath = s_cwd_images + "Title.png";
 
 	// create a SD surface to hold the background image
 	surface = IMG_Load(TITLEpath.c_str());
@@ -304,7 +304,7 @@ int main(int argc, char* argv[]){
 
 	//********** Create 1 Player Normal **********
 
-		string P1_Npath = s_cwd_images + "/Player1_n.png";
+		string P1_Npath = s_cwd_images + "Player1_n.png";
 
 		// create a SD surface to hold the Player1 image
 		surface = IMG_Load(P1_Npath.c_str());
@@ -328,7 +328,7 @@ int main(int argc, char* argv[]){
 
 		//********** Create 1 Player Over **********
 
-		string P1_Opath = s_cwd_images + "/Player1_o.png";
+		string P1_Opath = s_cwd_images + "Player1_o.png";
 
 		// create a SD surface to hold the Player1 image
 		surface = IMG_Load(P1_Opath.c_str());
@@ -352,7 +352,7 @@ int main(int argc, char* argv[]){
 
 		//********** Create 2 Player Normal **********
 
-		string P2_Npath = s_cwd_images + "/Player2_n.png";
+		string P2_Npath = s_cwd_images + "Player2_n.png";
 
 		// create a SD surface to hold the Player2 image
 		surface = IMG_Load(P2_Npath.c_str());
@@ -376,7 +376,7 @@ int main(int argc, char* argv[]){
 
 		//********** Create 2 Player Over **********
 
-		string P2_Opath = s_cwd_images + "/Player2_o.png";
+		string P2_Opath = s_cwd_images + "Player2_o.png";
 
 		// create a SD surface to hold the player2 image
 		surface = IMG_Load(P2_Opath.c_str());
@@ -400,7 +400,7 @@ int main(int argc, char* argv[]){
 
 		//********** Create Instructions Normal **********
 
-		string INST_Npath = s_cwd_images + "/Instructions_n.png";
+		string INST_Npath = s_cwd_images + "Instructions_n.png";
 
 		// create a SD surface to hold the instructions image
 		surface = IMG_Load(INST_Npath.c_str());
@@ -424,7 +424,7 @@ int main(int argc, char* argv[]){
 
 		//********** Create Instructions Over **********
 
-		string INST_Opath = s_cwd_images + "/Instructions_o.png";
+		string INST_Opath = s_cwd_images + "Instructions_o.png";
 
 		// create a SD surface to hold the Instructions image
 		surface = IMG_Load(INST_Opath.c_str());
@@ -448,7 +448,7 @@ int main(int argc, char* argv[]){
 
 		//********** Create Quit Normal **********
 
-		string QUIT_Npath = s_cwd_images + "/Quit_n.png";
+		string QUIT_Npath = s_cwd_images + "Quit_n.png";
 
 		// create a SD surface to hold the Quit image
 		surface = IMG_Load(QUIT_Npath.c_str());
@@ -472,7 +472,7 @@ int main(int argc, char* argv[]){
 
 		//********** Create Quit Over **********
 
-		string QUIT_Opath = s_cwd_images + "/Quit_o.png";
+		string QUIT_Opath = s_cwd_images + "Quit_o.png";
 
 		// create a SD surface to hold the Quit image
 		surface = IMG_Load(QUIT_Opath.c_str());
@@ -501,7 +501,7 @@ int main(int argc, char* argv[]){
 
 		//********** INSTRUCTIONS GRAPHICS - START **********
 
-			string instructionsTextPath = s_cwd_images + "/InstructionsText.png";
+			string instructionsTextPath = s_cwd_images + "InstructionsText.png";
 
 			// create a SD surface to hold the Instructions Title image
 			surface = IMG_Load(instructionsTextPath.c_str());
@@ -528,7 +528,7 @@ int main(int argc, char* argv[]){
 
 			//********** Create Main Menu Normal **********
 
-			string MENU_Npath = s_cwd_images + "/MainMenu_n.png";
+			string MENU_Npath = s_cwd_images + "MainMenu_n.png";
 
 			// create a SD surface to hold the menu image
 			surface = IMG_Load(MENU_Npath.c_str());
@@ -552,7 +552,7 @@ int main(int argc, char* argv[]){
 
 			//********** Create Main Menu Over **********
 
-			string MENU_Opath = s_cwd_images + "/MainMenu_o.png";
+			string MENU_Opath = s_cwd_images + "MainMenu_o.png";
 
 			// create a SD surface to hold the menu image
 			surface = IMG_Load(MENU_Opath.c_str());
@@ -578,7 +578,7 @@ int main(int argc, char* argv[]){
 
 		//********** WIN GRAPHICS - START **********
 
-			string WINPath = s_cwd_images + "/winTitle.png";
+			string WINPath = s_cwd_images + "winTitle.png";
 
 			// create a SD surface to hold the Instructions Title image
 			surface = IMG_Load(WINPath.c_str());
@@ -605,7 +605,7 @@ int main(int argc, char* argv[]){
 
 			//********** Create PLAY AGAIN Normal **********
 
-			string PLAY_Npath = s_cwd_images + "/Play_n.png";
+			string PLAY_Npath = s_cwd_images + "Play_n.png";
 
 			// create a SD surface to hold the menu image
 			surface = IMG_Load(PLAY_Npath.c_str());
@@ -629,7 +629,7 @@ int main(int argc, char* argv[]){
 
 			//********** Create PLAY AGAIN Over **********
 
-			string PLAY_Opath = s_cwd_images + "/Play_o.png";
+			string PLAY_Opath = s_cwd_images + "Play_o.png";
 
 			// create a SD surface to hold the menu image
 			surface = IMG_Load(PLAY_Opath.c_str());
@@ -655,7 +655,7 @@ int main(int argc, char* argv[]){
 
 		//********** LOSE GRAPHICS - START **********
 
-			string LOSEPath = s_cwd_images + "/loseTitle.png";
+			string LOSEPath = s_cwd_images + "loseTitle.png";
 
 			// create a SD surface to hold the Instructions Title image
 			surface = IMG_Load(LOSEPath.c_str());
@@ -684,7 +684,7 @@ int main(int argc, char* argv[]){
 	//********** Create Cursor **********
 
 	// create cursor
-	string CURSORpath = s_cwd_images + "/Cursor.png";
+	string CURSORpath = s_cwd_images + "Cursor.png";
 
 	// create a SD surface to hold the background image
 	surface = IMG_Load(CURSORpath.c_str());
@@ -732,13 +732,19 @@ int main(int argc, char* argv[]){
 	*/
 
 	// ***** Turn on Game Controller Events
-		SDL_GameControllerEventState(SDL_ENABLE);
+	SDL_GameControllerEventState(SDL_ENABLE);
 
-	//***** Set up a Game Controller variable *****
+	//***** Set up Game Controller 1 variable *****
 	SDL_GameController* gGameController0 = NULL;
 
-	//***** Open Game Controller*****
+	//***** Open Game Controller 1*****
 	gGameController0 = SDL_GameControllerOpen(0);
+
+	//***** Set up Game Controller 2 variable *****
+	SDL_GameController* gGameController1 = NULL;
+
+	//***** Open Game Controller*****
+	gGameController1 = SDL_GameControllerOpen(1);
 
 	// ***** SDL Event to handle input
 	SDL_Event event;
@@ -1069,7 +1075,7 @@ int main(int argc, char* argv[]){
 
 						switch(event.type){
 						case SDL_CONTROLLERBUTTONDOWN:
-							if(event.cdevice.which == 0)
+							if(event.cdevice.which == 0 || event.cdevice.which == 1)
 							{
 								if(event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
 								{
