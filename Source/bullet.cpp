@@ -56,7 +56,7 @@ void Bullet::Update(float deltaTime) // float delta
 		// and deativate and move off screen 
 		if (posRect.y < (0 - posRect.h)) 
 		{
-			posRect.w = -3020;
+			posRect.x = -3020;
 			pos_X = posRect.x;
 			active = false;
 		}

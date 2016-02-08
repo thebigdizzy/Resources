@@ -8,16 +8,19 @@
 #if defined(_WIN32) || (_WIN64)
 #include "SDL.h"
 #include "SDL_image.h"
+#include "SDL_mixer.h"
 #endif
 
 #if defined(__linux__)
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
+#include "SDL2/SDL_mixer.h"
 #endif
 
 #if defined(__APPLE__)
 #include "SDL2/SDL.h"
 #include "SDL2_image/SDL_image.h"
+#include "SDL2_mixer/SDL_mixer.h"
 #endif
 
 #if defined(__linux__)
@@ -179,6 +182,9 @@ int main(int argc, char* argv[]){
 
 	// create a string linking to the mac's images folder
 	string s_cwd_images = s_cwd + "\\Resources\\Images\\";
+
+	// create a string linking to the window's audio folder
+	string audio_dir = s_cwd + "\\Resources\\Audio\\";
 #endif
 
 #if defined(__linux__)
@@ -190,6 +196,9 @@ int main(int argc, char* argv[]){
 
 	// create a string linking to the mac's images folder
 	string s_cwd_images = s_cwd + "/Resources/Images/";
+
+	// create a string linking to the linux's audio folder
+	string audio_dir = s_cwd + "/Resources/Audio/";
 #endif
 
 #if defined(__APPLE__)
@@ -202,8 +211,11 @@ int main(int argc, char* argv[]){
 	// create a string linking to the mac's images folder
 	string s_cwd_images = s_cwd + "/Resources/Images/";
 
+	// create a string to link to the audio folder on __APPLE__
+	string audio_dir = s_cwd + "/Resources/Audio/";
+
 	// test
-	cout << s_cwd_images << endl;
+	//cout << audio_dir << endl;
 #endif
 
 
@@ -758,6 +770,30 @@ int main(int argc, char* argv[]){
 	// bool value to control movement through the states
 	bool menu = false, instructions = false, players1 = false, players2 = false, win = false, lose = false, quit = false;
 
+	// Open Audio Channel
+	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
+
+	// load a MUSIC file
+	//Mix_Music *bgm = Mix_LoadMUS((audio_dir + "background.wav").c_str());
+	// load a WAVE file
+	Mix_Music *bgm = Mix_LoadMUS((audio_dir + "background.wav").c_str());
+
+	//if(bgm == NULL)
+	//	cout << "I hate my life..." << endl;
+
+	// if the MUSIC file is not playing - Play it
+	if(!Mix_PlayingMusic())
+	{
+		Mix_PlayMusic(bgm, -1);
+	}
+
+	Mix_Chunk *pressSound = Mix_LoadWAV((audio_dir + "press.wav").c_str());
+
+	Mix_Chunk *overSound = Mix_LoadWAV((audio_dir + "over.wav").c_str());
+
+	// bool value to control the over sound effect and the buttons
+	 bool alreadyOver = false;
+
 	// The window is open: could enter program loop here (see SDL_PollEvent())
 	while (!quit)
 	{
@@ -837,6 +873,16 @@ int main(int argc, char* argv[]){
 				players2Over = SDL_HasIntersection(&activePos, &Player2nPos);
 				instructionsOver = SDL_HasIntersection(&activePos, &Inst_nPos);
 				quitOver = SDL_HasIntersection(&activePos, &Quit_nPos);
+
+				// if the cursor is over a button, play the over sound
+				if(players1Over || players2Over || instructionsOver || quitOver)
+				{
+					if(alreadyOver == false)
+					{
+						Mix_PlayChannel(-1, overSound, 0);
+						alreadyOver = true;
+					}
+				}
 
 				// Start Drawing
 
@@ -1053,7 +1099,6 @@ int main(int argc, char* argv[]){
 					SDL_RenderPresent(renderer);
 				}
 				break; // end main menu case
-
 		case PLAYERS2:
 				players2 = true;
 
@@ -1094,7 +1139,6 @@ int main(int argc, char* argv[]){
 
 							// send button press info to player 2
 							player2.OnControllerButton(event.cbutton);
-
 							break;
 						case SDL_CONTROLLERAXISMOTION:
 							// send axis info to player 1
