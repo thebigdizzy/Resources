@@ -4,13 +4,45 @@
 const int JOYSTICK_DEAD_ZONE = 8000;
 
 // Player creation Method
-Player::Player(SDL_Renderer *renderer, int pNum, string filePath, float x, float y)
+Player::Player(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
 {
 	// set the player number 0 or 1
 	playerNum = pNum;
 
 	// set float for player speed
 	speed = 500.0f;
+
+	laser = Mix_LoadWAV((audioPath + "laser.wav").c_str());
+
+	// init score and lives vars
+	oldScore = 0;
+	playerScore = 0;
+	oldLives = 0;
+	playerLives = 3;
+
+	// init the font system
+	TTF_Init();
+
+	// load the font
+	font = TTF_OpenFont((audioPath + "Airacobra Extra Bold.ttf").c_str(), 40);
+
+	// see if this is player 1, or player 2, and create the correctX and Y locations
+	if(playerNum == 0)
+	{
+		// create the score texture X and Y position
+		scorePos.x = scorePos.y = 10;
+		livesPos.x = 10;
+		livesPos.y = 40;
+	} else {
+		// create the score texture X and Y position
+		scorePos.x = 650;
+		scorePos.y = 10;
+		livesPos.x = 650;
+		livesPos.y = 40;
+	}
+
+	// update score
+	UpdateScore(renderer);
 
 	// see if this is player 1, or player 2, and create the correct file path
 	if (playerNum == 0)
@@ -76,6 +108,41 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, float x, float
 	}
 }
 
+// Update Score
+void Player::UpdateScore(SDL_Renderer *renderer)
+{
+	// fix for to_string problems on linux
+	string Result;		// string which will contain the result
+	ostringstream convert;	// stream used for the conversion
+	convert << playerScore;	// insert the textual representation of 'Number' in the characters in the stream
+	Result = convert.str();	// set 'Result' to the contents of the stream
+
+	// create the text for the font texture
+	tempScore = "Player Score: " + Result;
+
+	// check to see what player this is and color the font as needed
+	if(playerNum == 0)
+	{
+		// place the player 1 score info into a surface
+		scoreSurface = TTF_RenderText_Solid(font, tempScore.c_str(), colorP1);
+	} else {
+		// place the player 2 score info into a surface
+		scoreSurface = TTF_RenderText_Solid(font, tempScore.c_str(), colorP2);
+	}
+
+	// create the player score texture
+	scoreTexture = SDL_CreateTextureFromSurface(renderer, scoreSurface);
+
+	// get the Width and Height of the texture
+	SDL_QueryTexture(scoreTexture, NULL, NULL, &scorePos.w, &scorePos.h);
+
+	// free surface
+	SDL_FreeSurface(scoreSurface);
+
+	// set old score
+	oldScore = playerScore;
+}
+
 // create a bullet
 void Player::CreateBullet() {
 	// see if there is a bullet active to fire
@@ -84,6 +151,10 @@ void Player::CreateBullet() {
 		// see if the bullet is not active
 		if (bulletList[s].active == false) 
 		{
+
+			// Play the Laser sound when firing a bullet
+			Mix_PlayChannel(-1, laser, 0);
+
 			// set bullet to active
 			bulletList[s].active = true;
 
@@ -217,7 +288,7 @@ void Player::OnControllerAxis(const SDL_ControllerAxisEvent event)
 	}
 }
 
-void Player::Update(float deltaTime)
+void Player::Update(float deltaTime, SDL_Renderer *renderer)
 {
 	// Adjust position floats based on speed, direction of hoystick axis and deltaTime
 	pos_X += (speed * xDir) * deltaTime;
@@ -256,6 +327,11 @@ void Player::Update(float deltaTime)
 			bulletList[i].Update(deltaTime);
 		}
 	}
+
+	// should the score be updated?
+	if(playerScore != oldScore) {
+		UpdateScore(renderer);
+	}
 }
 
 // Player Draw method
@@ -273,6 +349,9 @@ void Player::Draw(SDL_Renderer *renderer)
 			bulletList[i].Draw(renderer);
 		}
 	}
+
+	// draw the player score
+	SDL_RenderCopy(renderer, scoreTexture, NULL, &scorePos);
 }
 
 Player::~Player()
