@@ -169,9 +169,19 @@ bool players1Over = false, players2Over = false, instructionsOver = false,
 
 // class header includes
 #include "player.h"
+#include "enemy.h"
+#include <vector>
+#include <stdlib.h>	// srand, rand
+#include <time.h>	// time
+
+// variable to hold the list of enemies: for 1 player game - 6 total, for 2 player game - 12 total
+vector<Enemy> enemyList;
 
 
 int main(int argc, char* argv[]){
+
+	// initialize random seed:
+	srand(time(NULL));
 
 #if defined(_WIN32) || (_WIN64)
 	cout << "Running on Windows" << endl;
@@ -786,6 +796,8 @@ int main(int argc, char* argv[]){
 
 	Mix_Chunk *overSound = Mix_LoadWAV((audio_dir + "over.wav").c_str());
 
+	Mix_Chunk *explosionSound = Mix_LoadWAV((audio_dir + "explosion.wav").c_str());
+
 	// bool value to control the over sound effect and the buttons
 	bool alreadyOver = false;
 
@@ -1055,11 +1067,23 @@ int main(int argc, char* argv[]){
 			break; // end instructions case
 
 		case PLAYERS1:
+
+			enemyList.clear();
+
 			players1 = true;
+
+			// create the enemy poos - 6
+			for (int i = 0; i < 6; i++)
+			{
+				// create the enemy
+				Enemy tmpEnemy (renderer, s_cwd_images);
+
+				// add to the enemyList
+				enemyList.push_back(tmpEnemy);
+			}
 
 			while(players1)
 			{
-
 				// set up frame rate for the section, or CASE
 				thisTime = SDL_GetTicks();
 				deltaTime =  (float)(thisTime - lastTime)/1000;
@@ -1110,6 +1134,40 @@ int main(int argc, char* argv[]){
 				// update player1
 				player1.Update(deltaTime, renderer);
 
+				// update the enemies
+				for (int i = 0; i < enemyList.size(); i++)
+				{
+					// update enemy
+					enemyList[i].Update(deltaTime);
+				}
+
+				for ( int i = 0; i < enemyList.size(); i++)
+				{
+					// check to see if this bullet is actuve (onscreen)
+					if(player1.bulletList[i].active == true)
+					{
+						// check all enemies against the active bullet
+						for (int j = 0; j < enemyList.size(); j++)
+						{
+							// if there is a collision between the two objects
+							if(SDL_HasIntersection(&player1.bulletList[i].posRect, &enemyList[j].posRect))
+							{
+								// play explostion sound
+								Mix_PlayChannel(-1, explosionSound, 0);
+
+								// reset the enemy
+								enemyList[j].Reset();
+
+								// reset the enemy
+								//player1.bulletList[i].Reset();
+
+								// give the player some poits
+								//player1.playerScore += 50;
+							}
+						}
+					}
+				}
+
 				// check for cursor button collision
 				// menuOver = SDL_HasIntersection(&activePos, &Menu_nPos);
 				// playOver = SDL_HasIntersection(&activePos, &PLAY_nPos);
@@ -1125,6 +1183,13 @@ int main(int argc, char* argv[]){
 				// Draw the bkgd2 image
 				SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
 
+				// draw the enemies
+				for (int i = 0; i < enemyList.size(); i++)
+				{
+					// update enemy
+					enemyList[i].Draw(renderer);
+				}
+
 				// draw player
 				player1.Draw(renderer);
 
@@ -1133,7 +1198,21 @@ int main(int argc, char* argv[]){
 			}
 			break; // end main menu case
 		case PLAYERS2:
+
+			// clear out any old enemies
+			enemyList.clear();
+
 			players2 = true;
+
+			// create the enemy poo - 12
+			for (int i = 0; i < 12; i++)
+			{
+				// create the enemy
+				Enemy tmpEnemy(renderer, s_cwd_images);
+
+				// add to enemylist
+				enemyList.push_back(tmpEnemy);
+			}
 
 			while(players2)
 			{
@@ -1193,6 +1272,13 @@ int main(int argc, char* argv[]){
 				// Update Player 2
 				player2.Update(deltaTime, renderer);
 
+				// update the enemies
+				for (int i = 0; i < enemyList.size(); i++)
+				{
+					// update the enemy
+					enemyList[i].Update(deltaTime);
+				}
+
 				// Start Drawing
 
 				// Clear SDL renderer
@@ -1206,6 +1292,13 @@ int main(int argc, char* argv[]){
 
 				// Draw the Player1_n image
 				// SDL_RenderCopy(renderer, Player2_n, NULL, &Player2nPos);
+
+				// draw the enemies
+				for (int i = 0; i < enemyList.size(); i++)
+				{
+					// update enemy
+					enemyList[i].Draw(renderer);
+				}
 
 				// draw player 1
 				player1.Draw(renderer);

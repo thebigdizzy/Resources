@@ -110,6 +110,9 @@ public:
 	// Update Score
 	void UpdateScore(SDL_Renderer *renderer);
 
+	// update lives method
+	void UpdateLives(SDL_Renderer *renderer);
+
 private:
 
 	// create a bullet function

@@ -40,6 +40,19 @@ Bullet::Bullet(SDL_Renderer *renderer, string filePath, float x, float y)
 	yDir = -1;
 }
 
+// reset the bullet method
+void Bullet::Reset()
+{
+	// reset the x position off
+	posRect.x = -1000;
+
+	// update the pos_X for precision
+	pos_X = posRect.x;
+
+	// deactivate the bullet
+	active = false;
+}
+
 // bullet update method
 void Bullet::Update(float deltaTime) // float delta
 {

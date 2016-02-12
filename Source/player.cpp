@@ -44,6 +44,9 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, string audioPa
 	// update score
 	UpdateScore(renderer);
 
+	// update lives
+	UpdateLives(renderer);
+
 	// see if this is player 1, or player 2, and create the correct file path
 	if (playerNum == 0)
 	{
@@ -106,6 +109,41 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, string audioPa
 		// add to the bulletList
 		bulletList.push_back(tmpBullet);
 	}
+}
+
+// Update Score
+void Player::UpdateLives(SDL_Renderer *renderer)
+{
+	// fix for to_string problems on linux
+	string Result;		// string which will contain the result
+	ostringstream convert;	// stream used for the conversion
+	convert << playerLives;	// insert the textual representation of 'Number' in the characters in the stream
+	Result = convert.str();	// set 'Result' to the contents of the stream
+
+	// create the text for the font texture
+	tempLives = "Player Lives: " + Result;
+
+	// check to see what player this is and color the font as needed
+	if(playerNum == 0)
+	{
+		// place the player 1 lives info into a surface
+		livesSurface = TTF_RenderText_Solid(font, tempLives.c_str(), colorP1);
+	} else {
+		// place the player 2 lives info into a surface
+		livesSurface = TTF_RenderText_Solid(font, tempLives.c_str(), colorP2);
+	}
+
+	// create the player lives texture
+	livesTexture = SDL_CreateTextureFromSurface(renderer, livesSurface);
+
+	// get the Width and Height of the texture
+	SDL_QueryTexture(livesTexture, NULL, NULL, &livesPos.w, &livesPos.h);
+
+	// free surface
+	SDL_FreeSurface(livesSurface);
+
+	// set old score
+	oldLives = playerLives;
 }
 
 // Update Score
@@ -185,7 +223,12 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		// if A Button
 		if (event.button == 0)
 		{
-			cout << "Player 1 - Button A" << endl;
+			//cout << "Player 1 - Button A" << endl;
+			// Test - change players score
+			playerScore += 10;
+
+			// Test - change players lives
+			playerLives -= 1;
 
 			// create a bullet
 			CreateBullet();
@@ -198,7 +241,13 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		// if A button
 		if (event.button == 0)
 		{
-			cout << "Player 2 - Button A" << endl;
+			// cout << "Player 2 - Button A" << endl;
+
+			// Test - change players score
+			playerScore += 10;
+
+			// Test - change players lives
+			playerLives -= 1;
 
 			// create a bullet
 			CreateBullet();
@@ -332,6 +381,11 @@ void Player::Update(float deltaTime, SDL_Renderer *renderer)
 	if(playerScore != oldScore) {
 		UpdateScore(renderer);
 	}
+
+	// should the lives be updated?
+		if(playerLives != oldLives) {
+			UpdateLives(renderer);
+		}
 }
 
 // Player Draw method
@@ -352,6 +406,10 @@ void Player::Draw(SDL_Renderer *renderer)
 
 	// draw the player score
 	SDL_RenderCopy(renderer, scoreTexture, NULL, &scorePos);
+
+	// draw the player lives
+		SDL_RenderCopy(renderer, livesTexture, NULL, &livesPos);
+
 }
 
 Player::~Player()

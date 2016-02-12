@@ -47,6 +47,9 @@ public:
 	// bullet draw = requires renderer be passed
 	void Draw(SDL_Renderer *renderer);
 
+	// bullet reset
+	void Reset();
+
 	// bullet destruction method
 	~Bullet();
 };
