@@ -6,6 +6,9 @@ const int JOYSTICK_DEAD_ZONE = 8000;
 // Player creation Method
 Player::Player(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
 {
+	// activate the player
+	active = true;
+
 	// set the player number 0 or 1
 	playerNum = pNum;
 
@@ -111,7 +114,32 @@ Player::Player(SDL_Renderer *renderer, int pNum, string filePath, string audioPa
 	}
 }
 
-// Update Score
+// rest player method
+void Player::Reset()
+{
+	// place the player based on player number
+	if (playerNum == 0)
+	{
+		// X and Y for Player 1
+		posRect.x = 250.0f;
+		posRect.y = 500.0f;
+	}
+	else {
+		// set X and Y for Player 2
+		posRect.x = 550.0f;
+		posRect.y = 500.0f;
+	}
+
+	pos_X = posRect.x;
+	pos_Y = posRect.y;
+	playerLives = 3;
+	playerScore = 0;
+	xDir = 0;
+	yDir = 0;
+	active = true;
+}
+
+// Update Lives
 void Player::UpdateLives(SDL_Renderer *renderer)
 {
 	// fix for to_string problems on linux
@@ -144,6 +172,19 @@ void Player::UpdateLives(SDL_Renderer *renderer)
 
 	// set old score
 	oldLives = playerLives;
+
+	// if player has no more lives
+	if (playerLives <= 0)
+	{
+		// deactivate the player
+		active = false;
+
+		// move the player off screen
+		posRect.x = posRect.y = -2000;
+
+		// set float values to location values
+		pos_X = pos_Y = -2000;
+	}
 }
 
 // Update Score
@@ -223,13 +264,7 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		// if A Button
 		if (event.button == 0)
 		{
-			//cout << "Player 1 - Button A" << endl;
-			// Test - change players score
-			playerScore += 10;
-
-			// Test - change players lives
-			playerLives -= 1;
-
+			
 			// create a bullet
 			CreateBullet();
 		}
@@ -241,14 +276,7 @@ void Player::OnControllerButton(const SDL_ControllerButtonEvent event)
 		// if A button
 		if (event.button == 0)
 		{
-			// cout << "Player 2 - Button A" << endl;
-
-			// Test - change players score
-			playerScore += 10;
-
-			// Test - change players lives
-			playerLives -= 1;
-
+			
 			// create a bullet
 			CreateBullet();
 		}

@@ -43,7 +43,7 @@ Bullet::Bullet(SDL_Renderer *renderer, string filePath, float x, float y)
 // reset the bullet method
 void Bullet::Reset()
 {
-	// reset the x position off
+	// reset the x position off screen
 	posRect.x = -1000;
 
 	// update the pos_X for precision
