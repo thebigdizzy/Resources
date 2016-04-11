@@ -230,7 +230,6 @@ void Player::CreateBullet() {
 		// see if the bullet is not active
 		if (bulletList[s].active == false) 
 		{
-
 			// Play the Laser sound when firing a bullet
 			Mix_PlayChannel(-1, laser, 0);
 

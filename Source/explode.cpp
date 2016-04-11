@@ -7,7 +7,7 @@ Explode::Explode(SDL_Renderer *renderer, string filePath, float x, float y)
 	active = false;
 
 	// get the directory path for the explosion graphic
-	string explodePath = filePath + "explosion.png";
+	string explodePath = filePath + "flashLight.png";
 
 	// init frame counter
 	frameCounter = 0.0f;
@@ -31,20 +31,20 @@ Explode::Explode(SDL_Renderer *renderer, string filePath, float x, float y)
 	textureHeight = h;
 
 	// setting the individualimage size
-	posRect.w = 95;
-	posRect.h = 95;
+	posRect.w = 28;
+	posRect.h = 28;
 
 	// set the x and y position of the explosion rectangle
 	posRect.x = x;
 	posRect.y = y;
 
 	// frame width and height of each animation image
-	frameWidth = 95;
-	frameHeight = 95;
+	frameWidth = 28;
+	frameHeight = 28;
 
 	// original draw rectangle
 	// used to draw one frame of the animation strip
-	drawRect.x = 95;
+	drawRect.x = 28;
 	drawRect.y = 0;
 	drawRect.w = frameWidth;
 	drawRect.h = frameHeight;
@@ -60,7 +60,7 @@ void Explode::Update(float deltaTime) // float delta
 		frameCounter += deltaTime;
 
 		// check to see if enough time has passed
-		if (frameCounter >= .085f)
+		if (frameCounter >= .1f)
 		{
 			// reset frame counter
 			frameCounter = 0.0f;

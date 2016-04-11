@@ -9,18 +9,21 @@
 #include "SDL.h"
 #include "SDL_image.h"
 #include "SDL_mixer.h"
+#include "SDL_ttf.h"
 #endif
 
 #if defined(__linux__)
 #include "SDL2/SDL.h"
 #include "SDL2/SDL_image.h"
 #include "SDL2/SDL_mixer.h"
+#include "SDL2/SDL_ttf.h"
 #endif
 
 #if defined(__APPLE__)
 #include "SDL2/SDL.h"
 #include "SDL2_image/SDL_image.h"
 #include "SDL2_mixer/SDL_mixer.h"
+#include "SDL2_ttf/SDL_ttf.h"
 #endif
 
 #if defined(__linux__)
@@ -34,6 +37,7 @@
 
 #include <stdio.h>
 #include <iostream>
+#include "tank.h"
 using namespace std;
 
 // CODE FOR FRAME RATE INDEPENDENCE
@@ -307,6 +311,8 @@ int main(int argc, char* argv[]) {
 	//instructions scene background
 	string BKGDInstpath = s_cwd_images + "InstructionsSceneBack.png";
 
+	string level1BKGDpath = s_cwd_images + "level1.png";
+
 	// create a SDL texture
 	SDL_Texture *bkgd1;
 
@@ -406,6 +412,15 @@ int main(int argc, char* argv[]) {
 	// place surface info the texture bkgd2
 	bkgdInst = SDL_CreateTextureFromSurface(renderer, surface);
 
+	// create a SDL texture
+	SDL_Texture *level1bkgd;
+
+	// create a SD surface to hold the background image
+	surface = IMG_Load(level1BKGDpath.c_str());
+
+	// place surface info the texture bkgd2
+	level1bkgd = SDL_CreateTextureFromSurface(renderer, surface);
+
 
 	// free the SDL surface
 	//SDL_FreeSurface (surface);
@@ -421,6 +436,17 @@ int main(int argc, char* argv[]) {
 	bkgd2Pos.y = -768;
 	bkgd2Pos.w = 1024;
 	bkgd2Pos.h = 768;
+
+	SDL_Rect bkgdRect;
+
+	bkgdRect.x = 0;
+
+	bkgdRect.y = 0;
+
+	bkgdRect.w = 2048;
+
+	bkgdRect.h = 1536;
+
 
 	//********** Create Main Menu **********
 
@@ -1102,17 +1128,24 @@ int main(int argc, char* argv[]) {
 	//***** Open Game Controller*****
 	gGameController1 = SDL_GameControllerOpen(1);
 
+	// create Bibble
+	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 50.0f, 50.0f);
+
+	float X_pos = 0.0f;
+
+	float Y_pos = 0.0f;
+
 	// ***** SDL Event to handle input
 	SDL_Event event;
 
 	//***** set up variables for the game states
-	enum GameState { MENU, INSTRUCTIONS, PLAYERS1, BACKSTORY, WIN, LOSE };
+	enum GameState { MENU, INSTRUCTIONS, LEVEL1, LEVEL2, BACKSTORY, WIN, LOSE };
 
 	// ***** set up the initial state
-	GameState gameState = LOSE;
+	GameState gameState = LEVEL1;
 
 	// bool value to control movement through the states
-	bool menu = false, instructions = false, players1 = false, backStory = false, win = false, lose = false, quit = false;
+	bool menu = false, instructions = false, level1 = false, level2 = false, backStory = false, win = false, lose = false, quit = false;
 
 	// Open Audio Channel
 	Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
@@ -1208,7 +1241,7 @@ int main(int argc, char* argv[]) {
 									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
 									Mix_PlayChannel(-1, pressSound, 0);
 									menu = false;
-									gameState = PLAYERS1;
+									gameState = LEVEL1;
 									players1Over = false;
 								}
 
@@ -1416,7 +1449,7 @@ int main(int argc, char* argv[]) {
 									// Play the Over Sound - plays fine through levels, must pause/delay for QUIT
 									Mix_PlayChannel(-1, pressSound, 0);
 									instructions = false;
-									gameState = PLAYERS1;
+									gameState = LEVEL1;
 								}
 							}
 						}
@@ -1427,11 +1460,20 @@ int main(int argc, char* argv[]) {
 					}
 				}
 
+				MakeExplosion(475, 450);
+
 				// update
 				//UpdateBackground(deltaTime);
 
 				// cursor update
 				UpdateCursor(deltaTime);
+
+				// check to see if active
+				if (explodeList[0].active == true)
+				{
+					// draw explode
+					explodeList[0].Update(deltaTime);
+				}
 
 				// check for cursor intersection with menu button
 				menuOver = SDL_HasIntersection(&activePos, &Menu_nPos);
@@ -1453,6 +1495,8 @@ int main(int argc, char* argv[]) {
 					alreadyOver = false;
 				}
 
+
+
 				// Start Drawing
 
 				// Clear SDL renderer
@@ -1462,6 +1506,13 @@ int main(int argc, char* argv[]) {
 				//SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
 				// Draw the bkgd1 image
 				SDL_RenderCopy(renderer, bkgdInst, NULL, &bkgd1Pos);
+
+				// check to see if active
+				if (explodeList[0].active == true)
+				{
+					// draw explode
+					explodeList[0].Draw(renderer);
+				}
 
 				// Draw the bkgd2 image
 				//SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
@@ -1498,26 +1549,11 @@ int main(int argc, char* argv[]) {
 			}
 			break; // end instructions case
 
-		case PLAYERS1:
+		case LEVEL1:
+			level1 = true;
+			alreadyOver = false;
 
-			enemyList.clear();
-
-			// reset the player
-			player1.Reset();
-
-			players1 = true;
-
-			// create the enemy poos - 6
-			for (int i = 0; i < 6; i++)
-			{
-				// create the enemy
-				Enemy tmpEnemy(renderer, s_cwd_images);
-
-				// add to the enemyList
-				enemyList.push_back(tmpEnemy);
-			}
-
-			while (players1)
+			while (level1)
 			{
 				// set up frame rate for the section, or CASE
 				thisTime = SDL_GetTicks();
@@ -1529,138 +1565,114 @@ int main(int argc, char* argv[]) {
 					// check to see if the SDL Window is closed - player clicks X in the Window
 					if (event.type == SDL_QUIT) {
 						quit = true;
-						players1 = false;
+						level1 = false;
 						break;
 					}
 
-					switch (event.type)
-					{
+					switch (event.type) {
 					case SDL_CONTROLLERBUTTONDOWN:
 						if (event.cdevice.which == 0)
 						{
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
-								players1 = false;
-								gameState = WIN;
-							}
+								if (menuOver) {
+									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
+									Mix_PlayChannel(-1, pressSound, 0);
+									level1 = false;
+									gameState = MENU;
+								}
 
-							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_Y)
-							{
-								players1 = false;
-								gameState = LOSE;
-							}
-
-							if (player1.active) {
-								// send button press info to player1
-								player1.OnControllerButton(event.cbutton);
+								if (playOver) {
+									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
+									Mix_PlayChannel(-1, pressSound, 0);
+									level1 = false;
+									gameState = LEVEL1;
+								}
 							}
 						}
 						break;
 					case SDL_CONTROLLERAXISMOTION:
-						if (player1.active)
-							player1.OnControllerAxis(event.caxis);
+						moveCursor(event.caxis);
 						break;
 					default:break;
 					}
 				}
 
+				// get values for both x and y of the controller
+				const Sint16 Xvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTX);
+				const Sint16 Yvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTY);
+
 				// update
 				UpdateBackground(deltaTime);
 
-				// update player1
-				if (player1.active)
-					player1.Update(deltaTime, renderer);
+				// update cursor
+				UpdateCursor(deltaTime);
 
-				// update the enemies
-				for (int i = 0; i < enemyList.size(); i++)
+				// pass to player 1
+				bibble.OnControllerAxis(Xvalue, Yvalue);
+
+				// update the player 1 tank
+				bibble.Update(deltaTime);
+
+				// move background long the x axis
+				if((bibble.posRect.x >= 1024 - bibble.posRect.w) && (bibble.Xvalue > 8000))
 				{
-					// update enemy
-					enemyList[i].Update(deltaTime);
-				}
+					X_pos -= (bibble.speed) * deltaTime;
 
-				// only check if the player is active
-				if (player1.active == true)
-				{
-					for (int i = 0; i < player1.bulletList.size(); i++)
+					if((bkgdRect.x > -1024))
 					{
-						// check to see if this bullet is active (onscreen)
-						if (player1.bulletList[i].active == true)
-						{
-							// check all enemies against the active bullet
-							for (int j = 0; j < enemyList.size(); j++)
-							{
-								// if there is a collision between the two objects
-								if (SDL_HasIntersection(&player1.bulletList[i].posRect, &enemyList[j].posRect))
-								{
-									// play explostion sound
-									Mix_PlayChannel(-1, explosionSound, 0);
+						bkgdRect.x = (int) (X_pos + .5f);
 
-									MakeExplosion(enemyList[j].posRect.x, enemyList[j].posRect.y);
-
-									// reset the enemy
-									enemyList[j].Reset();
-
-									// reset the enemy
-									player1.bulletList[i].Reset();
-
-									// give the player some points
-									player1.playerScore += 50;
-
-									// check to see if there is a winning condition
-									if (player1.playerScore >= 1000)
-									{
-										// go to win scene
-										players1 = false;
-										gameState = WIN;
-									}
-								}
-							}
-						}
-					}
-
-					// check to see if the enemies hit the player
-					for (int i = 0; i < enemyList.size(); i++)
-					{
-						// if there is a collision between the two objects
-						if (SDL_HasIntersection(&player1.posRect, &enemyList[i].posRect))
-						{
-							// play explosion sound
-							Mix_PlayChannel(-1, explosionSound, 0);
-
-							MakeExplosion(player1.posRect.x, player1.posRect.y);
-
-							// reset the enemy
-							enemyList[i].Reset();
-
-							// give the player some points
-							player1.playerLives -= 1;
-
-							// if game over - player lives <= 0
-							if (player1.playerLives <= 0)
-							{
-								players1 = false;
-								gameState = LOSE;
-								break;
-							}
-						}
-					}
-				}
-				// player 1 active check ends
-
-				// create a pool of explosions - 20
-				for (int i = 0; i < explodeList.size(); i++)
-				{
-					// check to see if active
-					if (explodeList[i].active == true)
-					{
-						// draw explode
-						explodeList[i].Update(deltaTime);
+					} else {
+						X_pos = bkgdRect.x;
 					}
 				}
 
-				// check for cursor button collision
-				// menuOver = SDL_HasIntersection(&activePos, &Menu_nPos);
-				// playOver = SDL_HasIntersection(&activePos, &PLAY_nPos);
+				if((bibble.posRect.x <= 0) && (bibble.Xvalue < 8000))
+				{
+					X_pos += (bibble.speed) * deltaTime;
+
+					if((bkgdRect.x < 0))
+					{
+						bkgdRect.x = (int) (X_pos + 0.5f);
+
+					} else {
+						X_pos = bkgdRect.x;
+					}
+				}
+
+				// move background along the y axis
+				if((bibble.posRect.y >= 768 - bibble.posRect.h) && (bibble.Yvalue > 8000))
+				{
+					Y_pos -= (bibble.speed) * deltaTime;
+
+					if((bkgdRect.y > -768))
+					{
+						bkgdRect.y = (int) (Y_pos + .5f);
+
+					} else {
+						Y_pos = bkgdRect.y;
+					}
+				}
+
+				if((bibble.posRect.y <= 0) && (bibble.Yvalue < 8000))
+				{
+					Y_pos += (bibble.speed) * deltaTime;
+
+					if((bkgdRect.y < 0))
+					{
+						bkgdRect.y = (int) (Y_pos + 0.5f);
+
+					} else {
+						Y_pos = bkgdRect.y;
+					}
+				}
+
+				// if the cursor is not over ANY button, reset the alreadyOver var
+				if (!menuOver && !playOver)
+				{
+					alreadyOver = false;
+				}
 
 				// Start Drawing
 
@@ -1668,37 +1680,27 @@ int main(int argc, char* argv[]) {
 				SDL_RenderClear(renderer);
 
 				// Draw the bkgd1 image
-				SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
+				SDL_RenderCopy(renderer, level1bkgd, NULL, &bkgdRect);
 
 				// Draw the bkgd2 image
-				SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
+				//SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
 
-				// draw the enemies
-				for (int i = 0; i < enemyList.size(); i++)
-				{
-					// update enemy
-					enemyList[i].Draw(renderer);
-				}
+				// Draw the Lose Scene image
+				//SDL_RenderCopy(renderer, loseText, NULL, &loseTextPos);
 
-				// draw player
-				player1.Draw(renderer);
+				// Draw the cursor image
+				SDL_RenderCopy(renderer, cursor, NULL, &cursorPos);
 
-				// draw the pool of explosions - 20
-				for (int i = 0; i < explodeList.size(); i++)
-				{
-					// check to see if active
-					if (explodeList[i].active == true)
-					{
-						// draw explode
-						explodeList[i].Draw(renderer);
-					}
-				}
+				bibble.Draw(renderer);
 
 				// SDL Render present
 				SDL_RenderPresent(renderer);
-			}
 
-			break; // end main menu case
+			}
+			break;
+		case LEVEL2:
+
+			break;
 		case BACKSTORY:
 			backStory = true;
 			alreadyOver = false;
@@ -1775,7 +1777,7 @@ int main(int argc, char* argv[]) {
 									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
 									Mix_PlayChannel(-1, pressSound, 0);
 									backStory = false;
-									gameState = PLAYERS1;
+									gameState = LEVEL1;
 									players1Over = false;
 								}
 							}
@@ -1928,7 +1930,7 @@ int main(int argc, char* argv[]) {
 									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
 									Mix_PlayChannel(-1, pressSound, 0);
 									win = false;
-									gameState = PLAYERS1;
+									gameState = LEVEL1;
 									playOver = false;
 								}
 							}
@@ -1948,6 +1950,14 @@ int main(int argc, char* argv[]) {
 				// update cursor
 				UpdateCursor(deltaTime);
 
+
+				// check to see if active
+				if (explodeList[0].active == true)
+				{
+					// draw explode
+					explodeList[0].Update(deltaTime);
+				}
+
 				// check for cursor intersection with menu button
 				menuOver = SDL_HasIntersection(&activePos, &WinMenu_nPos);
 				playOver = SDL_HasIntersection(&activePos, &winPlayNPos);
@@ -1961,6 +1971,8 @@ int main(int argc, char* argv[]) {
 						alreadyOver = true;
 					}
 				}
+
+				MakeExplosion(730, 390);
 
 				// if the cursor is not over ANY button, reset the alreadyOver var
 				if (!menuOver && !playOver)
@@ -1976,6 +1988,13 @@ int main(int argc, char* argv[]) {
 				// Draw the bkgd1 image
 				SDL_RenderCopy(renderer, bkgd9, NULL, &bkgd1Pos);
 
+				// check to see if active
+				if (explodeList[0].active == true)
+				{
+					// draw explode
+					explodeList[0].Draw(renderer);
+				}
+
 				// Draw the bkgd2 image
 				//SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
 
@@ -1984,11 +2003,11 @@ int main(int argc, char* argv[]) {
 
 				if (playOver) {
 					// Draw the Play Again N image
-					SDL_RenderCopy(renderer, winPlayN, NULL, &winPlayOPos);
+					SDL_RenderCopy(renderer, winPlayO, NULL, &winPlayOPos);
 				}
 				else {
 					// Draw the Play Again O image
-					SDL_RenderCopy(renderer, winPlayO, NULL, &winPlayNPos);
+					SDL_RenderCopy(renderer, winPlayN, NULL, &winPlayNPos);
 				}
 
 				if (menuOver) {
@@ -2046,7 +2065,7 @@ int main(int argc, char* argv[]) {
 									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
 									Mix_PlayChannel(-1, pressSound, 0);
 									lose = false;
-									gameState = PLAYERS1;
+									gameState = LEVEL1;
 								}
 							}
 						}
