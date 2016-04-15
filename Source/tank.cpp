@@ -38,7 +38,7 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 
 	playerNum = pNum;
 
-	speed = 200.0f;
+	speed = 100.0f;
 
 	// tank firing sound
 	//fire = Mix_LoadWAV((audioPath + "fire.wav").c_str());
@@ -53,7 +53,7 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 		//playerPath = filePath + "Tank.png";
 	}
 
-	playerPath = filePath + "Tank.png";
+	playerPath = filePath + "Bibble.png";
 
 	texture = IMG_LoadTexture(renderer, playerPath.c_str());
 
@@ -137,26 +137,26 @@ void Tank::Update(float deltaTime)
 	//pos_Y += (speed *yDir) * deltaTime;
 
 	// check if the tank is off screen and set it back
-	if(posRect.x < 0)
+	if(posRect.x < 511)
 	{
-		posRect.x = 0;
+		posRect.x = 511;
 		pos_X = posRect.x;
 	}
 
-	if(posRect.x > 1024 - posRect.w){
-		posRect.x = 1024 - posRect.w;
+	if(posRect.x > 513){
+		posRect.x = 513;
 		pos_X = posRect.x;
 	}
 
-	if(posRect.y < 0)
+	if(posRect.y < 383)
 	{
-		posRect.y = 0;
+		posRect.y = 383;
 		pos_Y = posRect.y;
 	}
 
-	if(posRect.y > 768 - posRect.h)
+	if(posRect.y > 385)
 	{
-		posRect.y = 768 - posRect.h;
+		posRect.y = 385;
 		pos_Y = posRect.y;
 	}
 

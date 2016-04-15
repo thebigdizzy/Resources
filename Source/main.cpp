@@ -38,6 +38,7 @@
 #include <stdio.h>
 #include <iostream>
 #include "tank.h"
+#include "Building.h"
 using namespace std;
 
 // CODE FOR FRAME RATE INDEPENDENCE
@@ -1131,6 +1132,9 @@ int main(int argc, char* argv[]) {
 	// create Bibble
 	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 50.0f, 50.0f);
 
+	Turret building1 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425);
+	Turret building2 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 425);
+
 	float X_pos = 0.0f;
 
 	float Y_pos = 0.0f;
@@ -1283,7 +1287,7 @@ int main(int argc, char* argv[]) {
 				}
 
 				// update bkgd
-				UpdateBackground(deltaTime);
+				//UpdateBackground(deltaTime);
 
 				// update cursor
 				UpdateCursor(deltaTime);
@@ -1592,7 +1596,7 @@ int main(int argc, char* argv[]) {
 						}
 						break;
 					case SDL_CONTROLLERAXISMOTION:
-						moveCursor(event.caxis);
+						//moveCursor(event.caxis);
 						break;
 					default:break;
 					}
@@ -1603,10 +1607,14 @@ int main(int argc, char* argv[]) {
 				const Sint16 Yvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTY);
 
 				// update
-				UpdateBackground(deltaTime);
+				//UpdateBackground(deltaTime);
 
 				// update cursor
-				UpdateCursor(deltaTime);
+				//UpdateCursor(deltaTime);
+
+				// update the buildings
+				building1.Update(deltaTime, bibble.posRect);
+				building2.Update(deltaTime, bibble.posRect);
 
 				// pass to player 1
 				bibble.OnControllerAxis(Xvalue, Yvalue);
@@ -1615,26 +1623,35 @@ int main(int argc, char* argv[]) {
 				bibble.Update(deltaTime);
 
 				// move background long the x axis
-				if((bibble.posRect.x >= 1024 - bibble.posRect.w) && (bibble.Xvalue > 8000))
+				// right
+				if((bibble.posRect.x > 512) && (bibble.Xvalue > 8000))
 				{
 					X_pos -= (bibble.speed) * deltaTime;
 
-					if((bkgdRect.x > -1024))
+					if((bkgdRect.x > -1374))
 					{
 						bkgdRect.x = (int) (X_pos + .5f);
+
+						// move the buildings
+						building1.TankMoveX(-bibble.speed, deltaTime);
+						building2.TankMoveX(-bibble.speed, deltaTime);
 
 					} else {
 						X_pos = bkgdRect.x;
 					}
 				}
-
-				if((bibble.posRect.x <= 0) && (bibble.Xvalue < 8000))
+				// left
+				if((bibble.posRect.x <= 512) && (bibble.Xvalue < 8000))
 				{
 					X_pos += (bibble.speed) * deltaTime;
 
-					if((bkgdRect.x < 0))
+					if((bkgdRect.x < 370))
 					{
 						bkgdRect.x = (int) (X_pos + 0.5f);
+
+						// move the buildings
+						building1.TankMoveX(bibble.speed, deltaTime);
+						building2.TankMoveX(bibble.speed, deltaTime);
 
 					} else {
 						X_pos = bkgdRect.x;
@@ -1642,28 +1659,178 @@ int main(int argc, char* argv[]) {
 				}
 
 				// move background along the y axis
-				if((bibble.posRect.y >= 768 - bibble.posRect.h) && (bibble.Yvalue > 8000))
+				// down
+				if((bibble.posRect.y > 384) && (bibble.Yvalue > 8000))
 				{
 					Y_pos -= (bibble.speed) * deltaTime;
 
-					if((bkgdRect.y > -768))
+					if((bkgdRect.y > -968))
 					{
 						bkgdRect.y = (int) (Y_pos + .5f);
+
+						// move the buildings
+						building1.TankMoveY(-bibble.speed, deltaTime);
+						building2.TankMoveY(-bibble.speed, deltaTime);
+
+					} else {
+						Y_pos = bkgdRect.y;
+					}
+				}
+				// up
+				if((bibble.posRect.y <= 384) && (bibble.Yvalue < 8000))
+				{
+					Y_pos += (bibble.speed) * deltaTime;
+
+					if((bkgdRect.y < 250))
+					{
+						bkgdRect.y = (int) (Y_pos + 0.5f);
+
+						// move the buildings
+						building1.TankMoveY(bibble.speed, deltaTime);
+						building2.TankMoveY(bibble.speed, deltaTime);
 
 					} else {
 						Y_pos = bkgdRect.y;
 					}
 				}
 
-				if((bibble.posRect.y <= 0) && (bibble.Yvalue < 8000))
+				// Start Drawing
+
+				// Clear SDL renderer
+				SDL_RenderClear(renderer);
+
+				// Draw the bkgd1 image
+				SDL_RenderCopy(renderer, level1bkgd, NULL, &bkgdRect);
+
+				// draw bibble
+				bibble.Draw(renderer);
+
+				building1.Draw(renderer);
+				building2.Draw(renderer);
+
+				// SDL Render present
+				SDL_RenderPresent(renderer);
+			}
+			break;
+		case LEVEL2:
+			level2 = true;
+			alreadyOver = false;
+
+			while (level2)
+			{
+				// set up frame rate for the section, or CASE
+				thisTime = SDL_GetTicks();
+				deltaTime = (float)(thisTime - lastTime) / 1000;
+				lastTime = thisTime;
+
+				// check for input events
+				if (SDL_PollEvent(&event)) {
+					// check to see if the SDL Window is closed - player clicks X in the Window
+					if (event.type == SDL_QUIT) {
+						quit = true;
+						level2 = false;
+						break;
+					}
+
+					switch (event.type) {
+					case SDL_CONTROLLERBUTTONDOWN:
+						if (event.cdevice.which == 0)
+						{
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
+							{
+								if (menuOver) {
+									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
+									Mix_PlayChannel(-1, pressSound, 0);
+									level2 = false;
+									gameState = MENU;
+								}
+
+								if (playOver) {
+									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
+									Mix_PlayChannel(-1, pressSound, 0);
+									level1 = false;
+									gameState = LEVEL2;
+								}
+							}
+						}
+						break;
+					case SDL_CONTROLLERAXISMOTION:
+						//moveCursor(event.caxis);
+						break;
+					default:break;
+					}
+				}
+
+				// get values for both x and y of the controller
+				const Sint16 Xvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTX);
+				const Sint16 Yvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTY);
+
+				// update
+				//UpdateBackground(deltaTime);
+
+				// update cursor
+				//UpdateCursor(deltaTime);
+
+				// pass to player 1
+				bibble.OnControllerAxis(Xvalue, Yvalue);
+
+				// update the player 1 tank
+				bibble.Update(deltaTime);
+
+				// move background long the x axis
+				if ((bibble.posRect.x > 512) && (bibble.Xvalue > 8000))
+				{
+					X_pos -= (bibble.speed) * deltaTime;
+
+					if ((bkgdRect.x > -1374))
+					{
+						bkgdRect.x = (int)(X_pos + .5f);
+
+					}
+					else {
+						X_pos = bkgdRect.x;
+					}
+				}
+
+				if ((bibble.posRect.x <= 512) && (bibble.Xvalue < 8000))
+				{
+					X_pos += (bibble.speed) * deltaTime;
+
+					if ((bkgdRect.x < 370))
+					{
+						bkgdRect.x = (int)(X_pos + 0.5f);
+
+					}
+					else {
+						X_pos = bkgdRect.x;
+					}
+				}
+
+				// move background along the y axis
+				if ((bibble.posRect.y > 384) && (bibble.Yvalue > 8000))
+				{
+					Y_pos -= (bibble.speed) * deltaTime;
+
+					if ((bkgdRect.y > -968))
+					{
+						bkgdRect.y = (int)(Y_pos + .5f);
+
+					}
+					else {
+						Y_pos = bkgdRect.y;
+					}
+				}
+
+				if ((bibble.posRect.y <= 384) && (bibble.Yvalue < 8000))
 				{
 					Y_pos += (bibble.speed) * deltaTime;
 
-					if((bkgdRect.y < 0))
+					if ((bkgdRect.y < 250))
 					{
-						bkgdRect.y = (int) (Y_pos + 0.5f);
+						bkgdRect.y = (int)(Y_pos + 0.5f);
 
-					} else {
+					}
+					else {
 						Y_pos = bkgdRect.y;
 					}
 				}
@@ -1682,24 +1849,12 @@ int main(int argc, char* argv[]) {
 				// Draw the bkgd1 image
 				SDL_RenderCopy(renderer, level1bkgd, NULL, &bkgdRect);
 
-				// Draw the bkgd2 image
-				//SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd2Pos);
-
-				// Draw the Lose Scene image
-				//SDL_RenderCopy(renderer, loseText, NULL, &loseTextPos);
-
-				// Draw the cursor image
-				SDL_RenderCopy(renderer, cursor, NULL, &cursorPos);
-
+				// draw bibble
 				bibble.Draw(renderer);
 
 				// SDL Render present
 				SDL_RenderPresent(renderer);
-
 			}
-			break;
-		case LEVEL2:
-
 			break;
 		case BACKSTORY:
 			backStory = true;
@@ -1945,7 +2100,7 @@ int main(int argc, char* argv[]) {
 				}
 
 				// update
-				UpdateBackground(deltaTime);
+				//UpdateBackground(deltaTime);
 
 				// update cursor
 				UpdateCursor(deltaTime);
@@ -2079,7 +2234,7 @@ int main(int argc, char* argv[]) {
 				}
 
 				// update
-				UpdateBackground(deltaTime);
+				//UpdateBackground(deltaTime);
 
 				// update cursor
 				UpdateCursor(deltaTime);
