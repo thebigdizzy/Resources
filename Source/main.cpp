@@ -1124,16 +1124,27 @@ int main(int argc, char* argv[]) {
 	gGameController0 = SDL_GameControllerOpen(0);
 
 	//***** Set up Game Controller 2 variable *****
-	SDL_GameController* gGameController1 = NULL;
+	//SDL_GameController* gGameController1 = NULL;
 
 	//***** Open Game Controller*****
-	gGameController1 = SDL_GameControllerOpen(1);
+	//gGameController1 = SDL_GameControllerOpen(1);
 
 	// create Bibble
 	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 50.0f, 50.0f);
 
-	Turret building1 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425);
-	Turret building2 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 425);
+	// middle buildings
+	Turret building1 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 0);
+	Turret building2 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 425, 0);
+	Turret building3 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 870, 0);
+	Turret building4 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 870, 0);
+
+	// bottom buildings
+	Turret building5 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 1315, 1);
+	Turret building6 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 1315, 1);
+
+	// top buildings
+	Turret building7 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 2);
+	Turret building8 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 2);
 
 	float X_pos = 0.0f;
 
@@ -1169,7 +1180,7 @@ int main(int argc, char* argv[]) {
 
 	Mix_Chunk *overSound = Mix_LoadWAV((audio_dir + "over.wav").c_str());
 
-	Mix_Chunk *explosionSound = Mix_LoadWAV((audio_dir + "explosion.wav").c_str());
+	//Mix_Chunk *explosionSound = Mix_LoadWAV((audio_dir + "explosion.wav").c_str());
 
 	// bool value to control the over sound effect and the buttons
 	bool alreadyOver = false;
@@ -1615,6 +1626,10 @@ int main(int argc, char* argv[]) {
 				// update the buildings
 				building1.Update(deltaTime, bibble.posRect);
 				building2.Update(deltaTime, bibble.posRect);
+				building3.Update(deltaTime, bibble.posRect);
+				building4.Update(deltaTime, bibble.posRect);
+				building5.Update(deltaTime, bibble.posRect);
+				building6.Update(deltaTime, bibble.posRect);
 
 				// pass to player 1
 				bibble.OnControllerAxis(Xvalue, Yvalue);
@@ -1622,9 +1637,19 @@ int main(int argc, char* argv[]) {
 				// update the player 1 tank
 				bibble.Update(deltaTime);
 
+				if(SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
+						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
+				{
+					bibble.speed = -2000;
+				}
+				else {
+					bibble.speed = 100;
+				}
+
 				// move background long the x axis
 				// right
-				if((bibble.posRect.x > 512) && (bibble.Xvalue > 8000))
+				if((bibble.posRect.x >= 512) && (bibble.Xvalue > 8000))
 				{
 					X_pos -= (bibble.speed) * deltaTime;
 
@@ -1635,7 +1660,12 @@ int main(int argc, char* argv[]) {
 						// move the buildings
 						building1.TankMoveX(-bibble.speed, deltaTime);
 						building2.TankMoveX(-bibble.speed, deltaTime);
-
+						building3.TankMoveX(-bibble.speed, deltaTime);
+						building4.TankMoveX(-bibble.speed, deltaTime);
+						building5.TankMoveX(-bibble.speed, deltaTime);
+						building6.TankMoveX(-bibble.speed, deltaTime);
+						building7.TankMoveX(-bibble.speed, deltaTime);
+						building8.TankMoveX(-bibble.speed, deltaTime);
 					} else {
 						X_pos = bkgdRect.x;
 					}
@@ -1652,7 +1682,12 @@ int main(int argc, char* argv[]) {
 						// move the buildings
 						building1.TankMoveX(bibble.speed, deltaTime);
 						building2.TankMoveX(bibble.speed, deltaTime);
-
+						building3.TankMoveX(bibble.speed, deltaTime);
+						building4.TankMoveX(bibble.speed, deltaTime);
+						building5.TankMoveX(bibble.speed, deltaTime);
+						building6.TankMoveX(bibble.speed, deltaTime);
+						building7.TankMoveX(bibble.speed, deltaTime);
+						building8.TankMoveX(bibble.speed, deltaTime);
 					} else {
 						X_pos = bkgdRect.x;
 					}
@@ -1660,7 +1695,7 @@ int main(int argc, char* argv[]) {
 
 				// move background along the y axis
 				// down
-				if((bibble.posRect.y > 384) && (bibble.Yvalue > 8000))
+				if((bibble.posRect.y >= 384) && (bibble.Yvalue > 8000))
 				{
 					Y_pos -= (bibble.speed) * deltaTime;
 
@@ -1671,7 +1706,12 @@ int main(int argc, char* argv[]) {
 						// move the buildings
 						building1.TankMoveY(-bibble.speed, deltaTime);
 						building2.TankMoveY(-bibble.speed, deltaTime);
-
+						building3.TankMoveY(-bibble.speed, deltaTime);
+						building4.TankMoveY(-bibble.speed, deltaTime);
+						building5.TankMoveY(-bibble.speed, deltaTime);
+						building6.TankMoveY(-bibble.speed, deltaTime);
+						building7.TankMoveY(-bibble.speed, deltaTime);
+						building8.TankMoveY(-bibble.speed, deltaTime);
 					} else {
 						Y_pos = bkgdRect.y;
 					}
@@ -1688,7 +1728,12 @@ int main(int argc, char* argv[]) {
 						// move the buildings
 						building1.TankMoveY(bibble.speed, deltaTime);
 						building2.TankMoveY(bibble.speed, deltaTime);
-
+						building3.TankMoveY(bibble.speed, deltaTime);
+						building4.TankMoveY(bibble.speed, deltaTime);
+						building5.TankMoveY(bibble.speed, deltaTime);
+						building6.TankMoveY(bibble.speed, deltaTime);
+						building7.TankMoveY(bibble.speed, deltaTime);
+						building8.TankMoveY(bibble.speed, deltaTime);
 					} else {
 						Y_pos = bkgdRect.y;
 					}
@@ -1707,6 +1752,12 @@ int main(int argc, char* argv[]) {
 
 				building1.Draw(renderer);
 				building2.Draw(renderer);
+				building3.Draw(renderer);
+				building4.Draw(renderer);
+				building5.Draw(renderer);
+				building6.Draw(renderer);
+				building7.Draw(renderer);
+				building8.Draw(renderer);
 
 				// SDL Render present
 				SDL_RenderPresent(renderer);

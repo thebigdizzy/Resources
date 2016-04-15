@@ -41,13 +41,13 @@ public:
 
 	// turret's texture to hold base abd barrel images
 	SDL_Texture *tBase;
-	SDL_Texture *tBarrel;
+	//SDL_Texture *tBarrel;
 
 	// turret's SDL_Rect for the x, y, w, and h of base texture
 	SDL_Rect baseRect;
 
 	// barrel's SDL_Rect for the x, y, w, and h of barrel's texture
-	SDL_Rect barrelRect;
+	//SDL_Rect barrelRect;
 
 	// turret's SDL_Rect for the angle between the turret's position and the tank's position
 	float x, y, turretAngle;
@@ -56,15 +56,15 @@ public:
 	SDL_Point center;
 
 	// floats for the fireTime  and fireRate
-	float fireTime = 0.0f;
-	float fireRate = 1000.0f;
+	//float fireTime = 0.0f;
+	//float fireRate = 1000.0f;
 
 	// audio sound effect - CHUNK
-	Mix_Chunk *fire;
+	//Mix_Chunk *fire;
 
 	// turret's creation method using passed in values for renderer, player number, path to the texture
 	// starting pos x, starting pos y
-	Turret(SDL_Renderer *renderer, string filrPath, string audioPath, float x, float y);
+	Turret(SDL_Renderer *renderer, string filrPath, string audioPath, float x, float y, int id);
 
 	// update the turret using the passed in deltaTime
 	void Update(float deltaTime, SDL_Rect tankRect);
@@ -76,7 +76,7 @@ public:
 	void Reset();
 
 	// create a bullet
-	void CreateBullet(SDL_Rect target);
+	//void CreateBullet(SDL_Rect target);
 
 	void TankMoveX(float tankSpeed, float deltaTime);
 
