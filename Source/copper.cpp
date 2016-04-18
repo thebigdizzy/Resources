@@ -1,10 +1,34 @@
 #include "copper.h"
 
-Copper::Copper(SDL_Renderer *renderer, string filePath, string audioPath, float x, float y)
+Copper::Copper(SDL_Renderer *renderer, string filePath, string audioPath, float x, float y, int id)
 {
 	active = true;
 
 	turn = false;
+
+	idNum = id;
+
+	if(id == 0){
+		rt = true;
+		lt = false;
+		up = false;
+		dn = false;
+	} else if(id == 1){
+		rt = false;
+		lt = true;
+		up = false;
+		dn = false;
+	}else if(id == 2){
+		rt = false;
+		lt = false;
+		up = false;
+		dn = true;
+	}else if(id == 3){
+		rt = false;
+		lt = false;
+		up = true;
+		dn = false;
+	}
 
 	//cAnim = Mix_LoadWAV((audioPath + "fire.wav").c_str());
 
@@ -54,6 +78,9 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 {
 	cAnim[0].Update(deltaTime);
 
+	float move_x = 0;
+	float move_y = 0;
+
 	double distancex = (cAnim[0].posRect.x - CopperRect.x) * (cAnim[0].posRect.x - CopperRect.x);
 	double distancey = (cAnim[0].posRect.y - CopperRect.y) * (cAnim[0].posRect.y - CopperRect.y);
 
@@ -68,43 +95,80 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 	}*/
 
 	if (active) {
-		if (posX < sPosX) {
-			rt = true;
-			lt = false;
-			turn = true;
-		}
-		else if (posX > sPosX + 500) {
-			lt = true;
-			rt = false;
-			turn = true;
-		}
+		if(idNum == 0){
+			if (posX < sPosX) {
+				rt = true;
+				lt = false;
+				turn = true;
+			}
+			else if (posX > sPosX + 500) {
+				lt = true;
+				rt = false;
+				turn = true;
+			}
 
-		if (rt && turn && !lt) {
-			CopperAngle += .01f;
-
-			if (CopperAngle >= 0)
-				turn = false;
-		}
-		else if (lt && turn && !rt) {
-			CopperAngle -= .01f;
+			if (rt && turn && !lt) {
+				CopperAngle += .1f;
+			}
+			else if (lt && turn && !rt) {
+				CopperAngle -= .1f;
+			}
 
 			if (CopperAngle <= -180)
 				turn = false;
+			else if (CopperAngle >= 0)
+				turn = false;
+
+			if (rt && !turn){
+				CopperAngle = 0;
+				move_x = speed;
+			}
+			else if(lt && !turn){
+				CopperAngle = -180;
+				move_x = -speed;
+			}
+		} else if(idNum == 1){
+			if (posX < sPosX - 500) {
+				rt = true;
+				lt = false;
+				turn = true;
+			}
+			else if (posX > sPosX) {
+				lt = true;
+				rt = false;
+				turn = true;
+			}
+
+			if (rt && turn && !lt) {
+				CopperAngle -= .1f;
+			}
+			else if (lt && turn && !rt) {
+				CopperAngle += .1f;
+			}
+
+			if (CopperAngle <= 0)
+				turn = false;
+			else if (CopperAngle >= 180)
+				turn = false;
+
+			if (rt && !turn){
+				CopperAngle = 0;
+				move_x = speed;
+			}
+			else if(lt && !turn){
+				CopperAngle = 180;
+				move_x = -speed;
+			}
 		}
 
-		if (rt && !turn)
-			x = 1;
-		else if(lt && !turn)
-			x = -1;
-		y = 0;
+		//cout << idNum << endl;
 
 		if (!turn) {
-			////CopperAngle = atan2(y, x) * 180 / 3.14;
+			//CopperAngle = atan2(y, x) * 180 / 3.14;
 
 			//float radians = (0 * 3.14) / 180;
 
-			float move_x = speed;
-			float move_y = 0;
+
 			posT_X += (move_x)* deltaTime;
 			posT_Y += (move_y)* deltaTime;
 

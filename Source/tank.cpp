@@ -3,20 +3,6 @@
 // analog joystick dead zone
 const int JOYSTICK_DEAD_ZONE = 8000;
 
-void Tank::eTankHit()
-{
-	playerHealth -= .005f;
-
-	midR.w = playerHealth / maxHealth * 300;
-}
-
-void Tank::eBulletHit()
-{
-	playerHealth -= 5;
-
-	midR.w = playerHealth / maxHealth * 300;
-}
-
 // tank creation
 Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
 {
@@ -90,6 +76,20 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 		//add to bulletList
 		bulletList.push_back(tmpBullet);
 	}
+}
+
+void Tank::eTankHit()
+{
+	playerHealth -= .005f;
+
+	midR.w = playerHealth / maxHealth * 300;
+}
+
+void Tank::eBulletHit()
+{
+	playerHealth -= 5;
+
+	midR.w = playerHealth / maxHealth * 300;
 }
 
 void Tank::Update(float deltaTime)
@@ -177,7 +177,7 @@ void Tank::Update(float deltaTime)
 
 void Tank::Draw(SDL_Renderer *renderer)
 {
-	SDL_RenderCopyEx(renderer, texture, nullptr, &posRect, tankAngle, &center, SDL_FLIP_NONE);
+	SDL_RenderCopyEx(renderer, texture, NULL, &posRect, tankAngle, &center, SDL_FLIP_NONE);
 	//SDL_RenderCopy(renderer, back, NULL, &backR);
 	//SDL_RenderCopy(renderer, mid, NULL, &midR);
 	//SDL_RenderCopy(renderer, front, NULL, &frontR);
@@ -282,7 +282,6 @@ void Tank::OnControllerAxis(Sint16 X, Sint16 Y)
 		{
 			Yvalue = 0.0f; // NONE
 		}
-
 }
 
 // create bullet method

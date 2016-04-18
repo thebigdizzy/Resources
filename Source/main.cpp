@@ -169,7 +169,7 @@ void UpdateCursor(float deltaTime) {
 
 // variables for all Menus button over
 bool players1Over = false, players2Over = false, instructionsOver = false,
-quitOver = false, menuOver = false, playOver = false;
+		quitOver = false, menuOver = false, playOver = false;
 
 // class header includes
 //#include "player.h"
@@ -262,12 +262,12 @@ int main(int argc, char* argv[]) {
 
 	// Create an application window with the following settings:
 	window = SDL_CreateWindow("An SDL2 window",		// window title
-		SDL_WINDOWPOS_UNDEFINED,           		// initial x position
-		SDL_WINDOWPOS_UNDEFINED,           		// initial y position
-		1024,                               	// width, in pixels
-		768,                               		// height, in pixels
-		SDL_WINDOW_OPENGL                  		// flags - see below
-		);
+			SDL_WINDOWPOS_UNDEFINED,           		// initial x position
+			SDL_WINDOWPOS_UNDEFINED,           		// initial y position
+			1024,                               	// width, in pixels
+			768,                               		// height, in pixels
+			SDL_WINDOW_OPENGL                  		// flags - see below
+	);
 
 	// Check that the window was successfully created
 	if (window == NULL) {
@@ -1109,7 +1109,7 @@ int main(int argc, char* argv[]) {
 	SDL_UpdateWindowSurface(window);
 	 */
 
-	 // ***** Turn on Game Controller Events
+	// ***** Turn on Game Controller Events
 	SDL_GameControllerEventState(SDL_ENABLE);
 
 	//***** Set up Game Controller 1 variable *****
@@ -1125,8 +1125,9 @@ int main(int argc, char* argv[]) {
 	//gGameController1 = SDL_GameControllerOpen(1);
 
 	// create Bibble
-	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 50.0f, 50.0f);
-	Copper cop1 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 350.0f);
+	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 512.0f, 384.0f);
+	Copper cop1 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 350.0f, 0);
+	Copper cop2 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1600.0f, 220.0f, 1);
 
 	// middle buildings
 	Building building1 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 0);
@@ -1218,7 +1219,6 @@ int main(int argc, char* argv[]) {
 			Player1oPos.y = 305;
 			Player1oPos.w = 361;
 			Player1oPos.h = 25;
-
 
 			while (menu)
 			{
@@ -1610,38 +1610,15 @@ int main(int argc, char* argv[]) {
 				const Sint16 Xvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTX);
 				const Sint16 Yvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTY);
 
-				// update
-				//UpdateBackground(deltaTime);
-
-				// update cursor
-				//UpdateCursor(deltaTime);
-
-				// update the buildings
-				building1.Update(deltaTime, bibble.posRect);
-				building2.Update(deltaTime, bibble.posRect);
-				building3.Update(deltaTime, bibble.posRect);
-				building4.Update(deltaTime, bibble.posRect);
-				building5.Update(deltaTime, bibble.posRect);
-				building6.Update(deltaTime, bibble.posRect);
-
 				// pass to player 1
 				bibble.OnControllerAxis(Xvalue, Yvalue);
 
-				// update the player 1 tank
+				// update the player
 				bibble.Update(deltaTime);
 
 				// update the coppers
 				cop1.Update(deltaTime, bibble.posRect);
-
-				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
-					SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
-					SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
-				{
-					bibble.speed = -2000;
-				}
-				else {
-					bibble.speed = 100;
-				}
+				cop2.Update(deltaTime, bibble.posRect);
 
 				// move background long the x axis
 				// right
@@ -1664,6 +1641,7 @@ int main(int argc, char* argv[]) {
 						building8.TankMoveX(-bibble.speed, deltaTime);
 
 						cop1.eCopperMoveX(-bibble.speed, deltaTime);
+						cop2.eCopperMoveX(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1680,7 +1658,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 				// left
-				if ((bibble.posRect.x <= 512) && (bibble.Xvalue < 8000))
+				if ((bibble.posRect.x <= 512) && (bibble.Xvalue < -8000))
 				{
 					X_pos += (bibble.speed) * deltaTime;
 
@@ -1699,6 +1677,7 @@ int main(int argc, char* argv[]) {
 						building8.TankMoveX(bibble.speed, deltaTime);
 
 						cop1.eCopperMoveX(bibble.speed, deltaTime);
+						cop2.eCopperMoveX(bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1735,6 +1714,7 @@ int main(int argc, char* argv[]) {
 						building8.TankMoveY(-bibble.speed, deltaTime);
 
 						cop1.eCopperMoveY(-bibble.speed, deltaTime);
+						cop2.eCopperMoveY(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1750,7 +1730,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 				// up
-				if ((bibble.posRect.y <= 384) && (bibble.Yvalue < 8000))
+				if ((bibble.posRect.y <= 384) && (bibble.Yvalue < -8000))
 				{
 					Y_pos += (bibble.speed) * deltaTime;
 
@@ -1769,6 +1749,7 @@ int main(int argc, char* argv[]) {
 						building8.TankMoveY(bibble.speed, deltaTime);
 
 						cop1.eCopperMoveY(bibble.speed, deltaTime);
+						cop2.eCopperMoveY(bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1784,6 +1765,16 @@ int main(int argc, char* argv[]) {
 					}
 				}
 
+				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
+						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
+				{
+					bibble.speed = -2000;
+				}
+				else {
+					bibble.speed = 100;
+				}
+
 				// Start Drawing
 
 				// Clear SDL renderer
@@ -1797,6 +1788,7 @@ int main(int argc, char* argv[]) {
 
 				// draw the coppers
 				cop1.Draw(renderer);
+				cop2.Draw(renderer);
 
 				building1.Draw(renderer);
 				building2.Draw(renderer);

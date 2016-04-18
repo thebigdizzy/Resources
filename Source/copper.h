@@ -54,9 +54,12 @@ public:
 
 	int health;
 
+	// id number
+	int idNum;
+
 	SDL_Point center;
 
-	Copper(SDL_Renderer *renderer, string filePath, string audioPath, float x, float y);
+	Copper(SDL_Renderer *renderer, string filePath, string audioPath, float x, float y, int id);
 
 	void Update(float deltaTime, SDL_Rect CopperRect);
 
