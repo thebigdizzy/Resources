@@ -1,9 +1,3 @@
-/*
- * main.cpp
- *
- *  Created on: Jan 20, 2016
- *      Author: danieltrayler
- */
 
 #if defined(_WIN32) || (_WIN64)
 #include "SDL.h"
@@ -39,6 +33,7 @@
 #include <iostream>
 #include "tank.h"
 #include "Building.h"
+#include "copper.h"
 using namespace std;
 
 // CODE FOR FRAME RATE INDEPENDENCE
@@ -174,18 +169,18 @@ void UpdateCursor(float deltaTime) {
 
 // variables for all Menus button over
 bool players1Over = false, players2Over = false, instructionsOver = false,
-		quitOver = false, menuOver = false, playOver = false;
+quitOver = false, menuOver = false, playOver = false;
 
 // class header includes
-#include "player.h"
-#include "enemy.h"
+//#include "player.h"
+//#include "enemy.h"
 #include <vector>
 #include <stdlib.h>	// srand, rand
 #include <time.h>	// time
 #include "explode.h"
 
 // variable to hold the list of enemies: for 1 player game - 6 total, for 2 player game - 12 total
-vector<Enemy> enemyList;
+//vector<Enemy> enemyList;
 vector<Explode> explodeList;
 
 void MakeExplosion(int x, int y)
@@ -267,12 +262,12 @@ int main(int argc, char* argv[]) {
 
 	// Create an application window with the following settings:
 	window = SDL_CreateWindow("An SDL2 window",		// window title
-			SDL_WINDOWPOS_UNDEFINED,           		// initial x position
-			SDL_WINDOWPOS_UNDEFINED,           		// initial y position
-			1024,                               	// width, in pixels
-			768,                               		// height, in pixels
-			SDL_WINDOW_OPENGL                  		// flags - see below
-	);
+		SDL_WINDOWPOS_UNDEFINED,           		// initial x position
+		SDL_WINDOWPOS_UNDEFINED,           		// initial y position
+		1024,                               	// width, in pixels
+		768,                               		// height, in pixels
+		SDL_WINDOW_OPENGL                  		// flags - see below
+		);
 
 	// Check that the window was successfully created
 	if (window == NULL) {
@@ -1114,7 +1109,7 @@ int main(int argc, char* argv[]) {
 	SDL_UpdateWindowSurface(window);
 	 */
 
-	// ***** Turn on Game Controller Events
+	 // ***** Turn on Game Controller Events
 	SDL_GameControllerEventState(SDL_ENABLE);
 
 	//***** Set up Game Controller 1 variable *****
@@ -1131,20 +1126,21 @@ int main(int argc, char* argv[]) {
 
 	// create Bibble
 	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 50.0f, 50.0f);
+	Copper cop1 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 350.0f);
 
 	// middle buildings
-	Turret building1 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 0);
-	Turret building2 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 425, 0);
-	Turret building3 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 870, 0);
-	Turret building4 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 870, 0);
+	Building building1 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 0);
+	Building building2 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 425, 0);
+	Building building3 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 870, 0);
+	Building building4 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 870, 0);
 
 	// bottom buildings
-	Turret building5 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 1315, 1);
-	Turret building6 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 1315, 1);
+	Building building5 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 1315, 1);
+	Building building6 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 1315, 1);
 
 	// top buildings
-	Turret building7 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 2);
-	Turret building8 = Turret(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 2);
+	Building building7 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 2);
+	Building building8 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 2);
 
 	float X_pos = 0.0f;
 
@@ -1185,15 +1181,10 @@ int main(int argc, char* argv[]) {
 	// bool value to control the over sound effect and the buttons
 	bool alreadyOver = false;
 
-	// ******************* CREATE PLAYERS - START **********************
-	Player player1 = Player(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 250.0, 500.0);
-	Player player2 = Player(renderer, 1, s_cwd_images.c_str(), audio_dir.c_str(), 750.0, 500.0);
-
 	// create a pool of explosions - 20
-	for (int i = 0; i < 20; i++)
-	{
+	for (int i = 0; i < 10; i++) {
 		// create the enemy
-		Explode tmpExplode(renderer, s_cwd_images, -1000, -1000);
+		Explode tmpExplode(renderer, s_cwd_images, -1000, -1000, 0);
 
 		// add to the enemyList
 		explodeList.push_back(tmpExplode);
@@ -1334,25 +1325,31 @@ int main(int argc, char* argv[]) {
 
 				timer++;
 
-				if(timer < 200){
+				if (timer < 200) {
 					// Draw the bkgd1 image
 					SDL_RenderCopy(renderer, bkgd1, NULL, &bkgd1Pos);
-				}else if (timer >= 200 && timer < 400){
+				}
+				else if (timer >= 200 && timer < 400) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd1Pos);
-				} else if(timer >= 400 && timer < 600){
+				}
+				else if (timer >= 400 && timer < 600) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd3, NULL, &bkgd1Pos);
-				} else if(timer >=600 && timer < 800){
+				}
+				else if (timer >= 600 && timer < 800) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd4, NULL, &bkgd1Pos);
-				} else if(timer >= 800 && timer < 1000){
+				}
+				else if (timer >= 800 && timer < 1000) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd3, NULL, &bkgd1Pos);
-				} else if(timer >= 1000 && timer < 1200){
+				}
+				else if (timer >= 1000 && timer < 1200) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd2, NULL, &bkgd1Pos);
-				} else {
+				}
+				else {
 					timer = 0;
 				}
 
@@ -1590,19 +1587,15 @@ int main(int argc, char* argv[]) {
 						{
 							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
-								if (menuOver) {
-									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
-									Mix_PlayChannel(-1, pressSound, 0);
-									level1 = false;
-									gameState = MENU;
-								}
+								bibble.OnControllerButton(event.cbutton);
+							}
 
-								if (playOver) {
-									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
-									Mix_PlayChannel(-1, pressSound, 0);
-									level1 = false;
-									gameState = LEVEL1;
-								}
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
+							{
+								SDL_Delay(500);
+								level1 = false;
+								quit = true;
+								break;
 							}
 						}
 						break;
@@ -1637,9 +1630,12 @@ int main(int argc, char* argv[]) {
 				// update the player 1 tank
 				bibble.Update(deltaTime);
 
-				if(SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
+				// update the coppers
+				cop1.Update(deltaTime, bibble.posRect);
+
+				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
 				{
 					bibble.speed = -2000;
 				}
@@ -1649,13 +1645,13 @@ int main(int argc, char* argv[]) {
 
 				// move background long the x axis
 				// right
-				if((bibble.posRect.x >= 512) && (bibble.Xvalue > 8000))
+				if ((bibble.posRect.x >= 512) && (bibble.Xvalue > 8000))
 				{
 					X_pos -= (bibble.speed) * deltaTime;
 
-					if((bkgdRect.x > -1374))
+					if ((bkgdRect.x > -1374))
 					{
-						bkgdRect.x = (int) (X_pos + .5f);
+						bkgdRect.x = (int)(X_pos + .5f);
 
 						// move the buildings
 						building1.TankMoveX(-bibble.speed, deltaTime);
@@ -1666,18 +1662,31 @@ int main(int argc, char* argv[]) {
 						building6.TankMoveX(-bibble.speed, deltaTime);
 						building7.TankMoveX(-bibble.speed, deltaTime);
 						building8.TankMoveX(-bibble.speed, deltaTime);
-					} else {
+
+						cop1.eCopperMoveX(-bibble.speed, deltaTime);
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveX(-bibble.speed, deltaTime);
+								}
+						}
+
+					}
+					else {
 						X_pos = bkgdRect.x;
 					}
 				}
 				// left
-				if((bibble.posRect.x <= 512) && (bibble.Xvalue < 8000))
+				if ((bibble.posRect.x <= 512) && (bibble.Xvalue < 8000))
 				{
 					X_pos += (bibble.speed) * deltaTime;
 
-					if((bkgdRect.x < 370))
+					if ((bkgdRect.x < 370))
 					{
-						bkgdRect.x = (int) (X_pos + 0.5f);
+						bkgdRect.x = (int)(X_pos + 0.5f);
 
 						// move the buildings
 						building1.TankMoveX(bibble.speed, deltaTime);
@@ -1688,20 +1697,32 @@ int main(int argc, char* argv[]) {
 						building6.TankMoveX(bibble.speed, deltaTime);
 						building7.TankMoveX(bibble.speed, deltaTime);
 						building8.TankMoveX(bibble.speed, deltaTime);
-					} else {
+
+						cop1.eCopperMoveX(bibble.speed, deltaTime);
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveX(bibble.speed, deltaTime);
+								}
+						}
+					}
+					else {
 						X_pos = bkgdRect.x;
 					}
 				}
 
 				// move background along the y axis
 				// down
-				if((bibble.posRect.y >= 384) && (bibble.Yvalue > 8000))
+				if ((bibble.posRect.y >= 384) && (bibble.Yvalue > 8000))
 				{
 					Y_pos -= (bibble.speed) * deltaTime;
 
-					if((bkgdRect.y > -968))
+					if ((bkgdRect.y > -968))
 					{
-						bkgdRect.y = (int) (Y_pos + .5f);
+						bkgdRect.y = (int)(Y_pos + .5f);
 
 						// move the buildings
 						building1.TankMoveY(-bibble.speed, deltaTime);
@@ -1712,18 +1733,30 @@ int main(int argc, char* argv[]) {
 						building6.TankMoveY(-bibble.speed, deltaTime);
 						building7.TankMoveY(-bibble.speed, deltaTime);
 						building8.TankMoveY(-bibble.speed, deltaTime);
-					} else {
+
+						cop1.eCopperMoveY(-bibble.speed, deltaTime);
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveY(-bibble.speed, deltaTime);
+								}
+						}
+					}
+					else {
 						Y_pos = bkgdRect.y;
 					}
 				}
 				// up
-				if((bibble.posRect.y <= 384) && (bibble.Yvalue < 8000))
+				if ((bibble.posRect.y <= 384) && (bibble.Yvalue < 8000))
 				{
 					Y_pos += (bibble.speed) * deltaTime;
 
-					if((bkgdRect.y < 250))
+					if ((bkgdRect.y < 250))
 					{
-						bkgdRect.y = (int) (Y_pos + 0.5f);
+						bkgdRect.y = (int)(Y_pos + 0.5f);
 
 						// move the buildings
 						building1.TankMoveY(bibble.speed, deltaTime);
@@ -1734,7 +1767,19 @@ int main(int argc, char* argv[]) {
 						building6.TankMoveY(bibble.speed, deltaTime);
 						building7.TankMoveY(bibble.speed, deltaTime);
 						building8.TankMoveY(bibble.speed, deltaTime);
-					} else {
+
+						cop1.eCopperMoveY(bibble.speed, deltaTime);
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveY(bibble.speed, deltaTime);
+								}
+						}
+					}
+					else {
 						Y_pos = bkgdRect.y;
 					}
 				}
@@ -1749,6 +1794,9 @@ int main(int argc, char* argv[]) {
 
 				// draw bibble
 				bibble.Draw(renderer);
+
+				// draw the coppers
+				cop1.Draw(renderer);
 
 				building1.Draw(renderer);
 				building2.Draw(renderer);
@@ -2033,25 +2081,31 @@ int main(int argc, char* argv[]) {
 
 				timer++;
 
-				if(timer < 200){
+				if (timer < 200) {
 					// Draw the bkgd1 image
 					SDL_RenderCopy(renderer, bkgd5, NULL, &bkgd1Pos);
-				}else if (timer >= 200 && timer < 400){
+				}
+				else if (timer >= 200 && timer < 400) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd6, NULL, &bkgd1Pos);
-				} else if(timer >= 400 && timer < 600){
+				}
+				else if (timer >= 400 && timer < 600) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd7, NULL, &bkgd1Pos);
-				} else if(timer >=600 && timer < 800){
+				}
+				else if (timer >= 600 && timer < 800) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd8, NULL, &bkgd1Pos);
-				} else if(timer >= 800 && timer < 1000){
+				}
+				else if (timer >= 800 && timer < 1000) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd7, NULL, &bkgd1Pos);
-				} else if(timer >= 1000 && timer < 1200){
+				}
+				else if (timer >= 1000 && timer < 1200) {
 					// Draw the bkgd2 image
 					SDL_RenderCopy(renderer, bkgd6, NULL, &bkgd1Pos);
-				} else {
+				}
+				else {
 					// Draw the bkgd1 image
 					SDL_RenderCopy(renderer, bkgd5, NULL, &bkgd1Pos);
 					timer = 0;

@@ -35,6 +35,9 @@ public:
 	// rectangles for the health bar images
 	SDL_Rect backR, midR, frontR;
 
+	// number of rocks bibble has
+	int rocks;
+
 	// player health
 	float playerHealth, maxHealth;
 
@@ -47,7 +50,7 @@ public:
 	bool active;
 
 	// variable to hold the list of bullets
-	vector<TankBullet> bulletList;
+	vector<Rocks> bulletList;
 
 	string playerPath;
 

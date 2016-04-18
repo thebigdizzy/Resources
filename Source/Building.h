@@ -28,7 +28,7 @@ using namespace std;
 
 //#include "turretBullet.h"
 
-class Turret{
+class Building{
 public:
 	// is the turret active
 	bool active;
@@ -64,7 +64,7 @@ public:
 
 	// turret's creation method using passed in values for renderer, player number, path to the texture
 	// starting pos x, starting pos y
-	Turret(SDL_Renderer *renderer, string filrPath, string audioPath, float x, float y, int id);
+	Building(SDL_Renderer *renderer, string filrPath, string audioPath, float x, float y, int id);
 
 	// update the turret using the passed in deltaTime
 	void Update(float deltaTime, SDL_Rect tankRect);
@@ -73,7 +73,7 @@ public:
 	void Draw(SDL_Renderer *renderer);
 
 	// reset the turret
-	void Reset();
+	//void Reset();
 
 	// create a bullet
 	//void CreateBullet(SDL_Rect target);

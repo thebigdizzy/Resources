@@ -1,14 +1,14 @@
 #include "Building.h"
 
 // Rurret creation method
-Turret::Turret(SDL_Renderer *renderer, string filePath, string audioPath, float x, float y, int id)
+Building::Building(SDL_Renderer *renderer, string filePath, string audioPath, float x, float y, int id)
 {
-	// activate the turret
+	// activate the Building
 	active = true;
 
 	string basePath = filePath + "building1.png";
 
-	// create the turret base file path
+	// create the Building base file path
 	if(id == 0){
 		basePath = filePath + "building1.png";
 	} else if(id == 1){
@@ -42,8 +42,8 @@ Turret::Turret(SDL_Renderer *renderer, string filePath, string audioPath, float 
 	posB_Y = baseRect.y;
 }
 
-// tank move the turret in X
-void Turret::TankMoveX(float tankSpeed, float deltaTime)
+// tank move the Building in X
+void Building::TankMoveX(float tankSpeed, float deltaTime)
 {
 	posB_X += (tankSpeed) * deltaTime;
 	posT_X += (tankSpeed) * deltaTime;
@@ -53,8 +53,8 @@ void Turret::TankMoveX(float tankSpeed, float deltaTime)
 	//barrelRect.x = (int) (posT_X + .5f);
 }
 
-// tank move the turret in Y
-void Turret::TankMoveY(float tankSpeed, float deltaTime)
+// tank move the Building in Y
+void Building::TankMoveY(float tankSpeed, float deltaTime)
 {
 	posB_Y += (tankSpeed) * deltaTime;
 	posT_Y += (tankSpeed) * deltaTime;
@@ -64,16 +64,16 @@ void Turret::TankMoveY(float tankSpeed, float deltaTime)
 	//barrelRect.y = (int) (posT_Y + .5f);
 }
 
-void Turret::Draw(SDL_Renderer *renderer)
+void Building::Draw(SDL_Renderer *renderer)
 {
 	// draw the base
 	SDL_RenderCopy(renderer, tBase, NULL, &baseRect);
 }
 
 // tank update method
-void Turret::Update(float deltaTime, SDL_Rect tankRect)
+void Building::Update(float deltaTime, SDL_Rect tankRect)
 {
-	// get the angle between the tank and the turret
+	// get the angle between the tank and the Building
 	x = (tankRect.x + (tankRect.w/2)) - (baseRect.x + (baseRect.w/2));
 	y = (tankRect.y + (tankRect.h/2)) - (baseRect.y + (baseRect.h/2));
 

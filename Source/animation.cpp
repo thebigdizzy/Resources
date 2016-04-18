@@ -1,19 +1,23 @@
-#include "explode.h"
+#include "animation.h"
 
-// Explode creation method
-Explode::Explode(SDL_Renderer *renderer, string filePath, float x, float y, int id)
+// Animate creation method
+Animate::Animate(SDL_Renderer *renderer, string filePath, float x, float y, int id)
 {
 	// set the explosion initial state 
 	active = false;
 
+	idNum = id;
+
+	string AnimatePath;
+
 	// get the directory path for the explosion graphic
-	string explodePath = filePath + "flashLight.png";
+	AnimatePath = filePath + "Copper.png";
 
 	// init frame counter
 	frameCounter = 0.0f;
 
 	// load the texture into a surface
-	SDL_Surface *surface = IMG_Load(explodePath.c_str());
+	SDL_Surface *surface = IMG_Load(AnimatePath.c_str());
 
 	// create the texture from the passed renderer and created surface
 	texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -31,27 +35,30 @@ Explode::Explode(SDL_Renderer *renderer, string filePath, float x, float y, int 
 	textureHeight = h;
 
 	// setting the individualimage size
-	posRect.w = 28;
-	posRect.h = 28;
+	posRect.w = 156/3;
+	posRect.h = 190/3;
 
 	// set the x and y position of the explosion rectangle
 	posRect.x = x;
 	posRect.y = y;
 
 	// frame width and height of each animation image
-	frameWidth = 28;
-	frameHeight = 28;
+
+	frameWidth = 156;
+	frameHeight = 190;
+	drawRect.x = 156;
+	drawRect.y = 0;
 
 	// original draw rectangle
 	// used to draw one frame of the animation strip
-	drawRect.x = 28;
-	drawRect.y = 0;
+
+
 	drawRect.w = frameWidth;
 	drawRect.h = frameHeight;
 }
 
 // explosion update method
-void Explode::Update(float deltaTime) // float delta
+void Animate::Update(float deltaTime) // float delta
 {
 	// check to see if the bullet is active
 	if (active)
@@ -60,7 +67,7 @@ void Explode::Update(float deltaTime) // float delta
 		frameCounter += deltaTime;
 
 		// check to see if enough time has passed
-		if (frameCounter >= .1f)
+		if (frameCounter >= .05f)
 		{
 			// reset frame counter
 			frameCounter = 0.0f;
@@ -75,31 +82,31 @@ void Explode::Update(float deltaTime) // float delta
 				drawRect.x = 0;
 
 				// set active set to false
-				active = false;
+				//active = false;
 
 				// move off screen until needed again
-				posRect.x = -1000;
-				posRect.y = -1000;
+				//posRect.x = -1000;
+				//posRect.y = -1000;
 			}
 		}
 	}
 }
 
 // reset the explosion method
-void Explode::Reset()
+void Animate::Reset()
 {
 	// deactivate the explosion
 	active = false;
 }
 
 // explosion draw method
-void Explode::Draw(SDL_Renderer *renderer)
+void Animate::Draw(SDL_Renderer *renderer, float angle)
 {
-	SDL_RenderCopy(renderer, texture, &drawRect, &posRect);
+	SDL_RenderCopyEx(renderer, texture, &drawRect, &posRect, angle, NULL, SDL_FLIP_NONE);
 }
 
 // explosion destruction
-Explode::~Explode()
+Animate::~Animate()
 {
 	// SDL_DestroyTexture(texture);
 }

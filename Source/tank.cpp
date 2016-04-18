@@ -40,18 +40,11 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 
 	speed = 100.0f;
 
+	// number of rocks Bibble starts with
+	rocks = 3;
+
 	// tank firing sound
 	//fire = Mix_LoadWAV((audioPath + "fire.wav").c_str());
-
-	// see if this is player 1, or player 2, and create the correct file path
-	if(playerNum == 0)
-	{
-		// create the blue tank texture
-		//playerPath = filePath + "Tank2.png";
-	} else {
-		// create the green tank texture
-		//playerPath = filePath + "Tank.png";
-	}
 
 	playerPath = filePath + "Bibble.png";
 
@@ -83,22 +76,20 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 
 	string bulletPath;
 
-	//if(playerNum == 0)
-	//{
-		//bulletPath = filePath + "greenBullet.png";
-	//} else {
-		//bulletPath = filePath + "blueBullet.png";
-	//}
-
-	// create the player's bullet pool
-	/*for (int i = 0; i < 10; i++)
+	if(playerNum == 0)
 	{
-		// create the bullet and move offscreen, out of the gameplayer area
-		TankBullet tmpBullet(renderer, bulletPath, -1000, -1000, 0, 0);
+		bulletPath = filePath + "rockItem.png";
+	} 
 
-		// add to bulletList
+	//create the player's bullet pool
+	for (int i = 0; i < 10; i++)
+	{
+		//create the bullet and move offscreen, out of the gameplayer area
+		Rocks tmpBullet(renderer, bulletPath, -1000, -1000, 0, 0);
+
+		//add to bulletList
 		bulletList.push_back(tmpBullet);
-	}*/
+	}
 }
 
 void Tank::Update(float deltaTime)
@@ -161,14 +152,27 @@ void Tank::Update(float deltaTime)
 	}
 
 		// update the tank's bullets
-		/*for (int i = 0; i < bulletList.size(); i++)
+		for (int i = 0; i < bulletList.size(); i++)
 		{
 			// check to see if the bullet is active
 			if(bulletList[i].active){
 				// update the bullet
 				bulletList[i].Update(deltaTime);
 			}
-		}*/
+		}
+
+		// update the rocks
+		for (int i = 0; i < bulletList.size(); i++)
+		{
+			if (bulletList[i].active && bulletList[i].stop) {
+				if (SDL_HasIntersection(&posRect, &bulletList[i].posRect))
+				{
+					bulletList[i].Reset();
+					// pickup the rock
+					rocks++;
+				}
+			}
+		}
 }
 
 void Tank::Draw(SDL_Renderer *renderer)
@@ -178,16 +182,15 @@ void Tank::Draw(SDL_Renderer *renderer)
 	//SDL_RenderCopy(renderer, mid, NULL, &midR);
 	//SDL_RenderCopy(renderer, front, NULL, &frontR);
 
-
 	// draw the player's bullets
-	/*for (int i = 0; i < bulletList.size(); i++)
+	for (int i = 0; i < bulletList.size(); i++)
 	{
 		// check to see if the bullet is active
 		if(bulletList[i].active){
 			// draw the bullet
 			bulletList[i].Draw(renderer);
 		}
-	}*/
+	}
 
 }
 
@@ -200,20 +203,9 @@ void Tank::OnControllerButton(const SDL_ControllerButtonEvent event)
 		if(event.button == 0)
 		{
 			// create a bullet
-			//CreateBullet();
+			CreateBullet();
 		}
 	}
-
-	// if the player's number is 1 and the joystick button is from joystick 1
-	if(event.which == 1 && playerNum == 1)
-		{
-			// if A button
-			if(event.button == 0)
-			{
-				// create a bullet
-				//CreateBullet();
-			}
-		}
 }
 
 void Tank::OnControllerAxis(Sint16 X, Sint16 Y)
@@ -297,46 +289,54 @@ void Tank::OnControllerAxis(Sint16 X, Sint16 Y)
 void Tank::CreateBullet()
 {
 	// see if there is a bullet active to fire
-	for(int i = 0; i < bulletList.size(); i++)
+	for (int i = 0; i < bulletList.size(); i++)
 	{
-		// see if the bullet is not active
-		if(bulletList[i].active == false)
-		{
-			// player the over sound - players fine through levels, must pause for QUIT
-			//Mix_PlayChannel(-1, fire, 0);
-
-			// set bulelt to active
-			bulletList[i].active = true;
-
-			// use some math in the x position to get the bullet close to
-			// the center of the player using player width
-			bulletList[i].posRect.x = (posRect.x + (posRect.w/2));
-			bulletList[i].posRect.y = (posRect.y + (posRect.h/2));
-
-			// finishing alighning to the player center using the texture width
-			bulletList[i].posRect.x = bulletList[i].posRect.x - (bulletList[i].posRect.w/2);
-			bulletList[i].posRect.y = bulletList[i].posRect.y - (bulletList[i].posRect.h/2);
-
-			// set the x and y position of the bullet's float positions
-			bulletList[i].pos_X = bulletList[i].posRect.x;
-			bulletList[i].pos_Y = bulletList[i].posRect.y;
-
-			// if the tank is moving fire in the direction
-			if(Xvalue != 0 || Yvalue != 0)
+		if (rocks) {
+			// see if the bullet is not active
+			if (bulletList[i].active == false)
 			{
-				// set the x and y positions of the bullet's float position
-				bulletList[i].tankAngle = tankAngle;
-				//bulletList[i].yDir = yDir;
-			} else {
-				// if the tank is not moving, fire in the direction currently facing
-				// set the x and y positions of the bullet's float positions
-				bulletList[i].tankAngle = oldAngle;
-				//bulletList[i].yDir = yDirOld;
+				rocks--;
+				// player the over sound - players fine through levels, must pause for QUIT
+				//Mix_PlayChannel(-1, fire, 0);
+
+				// set bulelt to active
+				bulletList[i].active = true;
+
+				// use some math in the x position to get the bullet close to
+				// the center of the player using player width
+				bulletList[i].posRect.x = (posRect.x + (posRect.w / 2));
+				bulletList[i].posRect.y = (posRect.y + (posRect.h / 2));
+
+				// finishing alighning to the player center using the texture width
+				bulletList[i].posRect.x = bulletList[i].posRect.x - (bulletList[i].posRect.w / 2);
+				bulletList[i].posRect.y = bulletList[i].posRect.y - (bulletList[i].posRect.h / 2);
+
+				// set the x and y position of the bullet's float positions
+				bulletList[i].pos_X = bulletList[i].posRect.x;
+				bulletList[i].pos_Y = bulletList[i].posRect.y;
+
+				// if the tank is moving fire in the direction
+				if (Xvalue != 0 || Yvalue != 0)
+				{
+					// set the x and y positions of the bullet's float position
+					bulletList[i].tankAngle = tankAngle;
+					//bulletList[i].yDir = yDir;
+				}
+				else {
+					// if the tank is not moving, fire in the direction currently facing
+					// set the x and y positions of the bullet's float positions
+					bulletList[i].tankAngle = oldAngle;
+					//bulletList[i].yDir = yDirOld;
+				}
+
+				// set the starting point of the bullet
+				bulletList[i].sX = bulletList[i].posRect.x;
+				bulletList[i].sY = bulletList[i].posRect.y;
+
+				// once bullet is four , break out of loop
+				break;
+
 			}
-
-			// once bullet is four , break out of loop
-			break;
-
 		}
 	}
 }

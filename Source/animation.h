@@ -18,7 +18,7 @@
 #include <iostream>
 using namespace std;
 
-class Explode {
+class Animate {
 public:
 	// bool for the state of the explosion
 	bool active;
@@ -41,18 +41,18 @@ public:
 	// float values to track time until next frame of animation
 	float frameCounter;
 
-	// explode creation method. requires the renderer, a path to the needed image, and x position, a y position
-	Explode(SDL_Renderer *renderer, string filePath, float x, float y, int id);
+	// Animate creation method. requires the renderer, a path to the needed image, and x position, a y position
+	Animate(SDL_Renderer *renderer, string filePath, float x, float y, int id);
 
-	// Explode Update - requires deltaTime to be passed
+	// Animate Update - requires deltaTime to be passed
 	void Update(float deltaTime);
 
-	// Explode Draw - requires renderer to be passed
-	void Draw(SDL_Renderer *renderer);
+	// Animate Draw - requires renderer to be passed
+	void Draw(SDL_Renderer *renderer, float angle);
 
-	// Explode reset
+	// Animate reset
 	void Reset();
 
-	// Explode destruction method
-	~Explode();
+	// Animate destruction method
+	~Animate();
 };
