@@ -96,7 +96,7 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 
 	double calcdistance = sqrt(distancex + distancey);
 
-	cout << "angle: " << center.x << endl;
+	//cout << "angle: " << center.x << endl;
 
 	/*if (calcdistance <= 1000)
 	{

@@ -67,6 +67,7 @@ Watcher::Watcher(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	posT_X = barrelRect.x;
 	posT_Y = barrelRect.y;
 
+	WatcherAngle = 0;
 }
 
 // tank move the Watcher in X
@@ -127,7 +128,22 @@ void Watcher::Update(float deltaTime, SDL_Rect tankRect)
 	// get the angle between the tank and the Watcher
 	x = (tankRect.x + (tankRect.w/2)) - (baseRect.x + (baseRect.w/2));
 	y = (tankRect.y + (tankRect.h/2)) - (baseRect.y + (baseRect.h/2));
-	WatcherAngle = atan2(y,x) * 180 / 3.14f;
+	static bool lR = false;
+	static bool Rl = false;
+	if(WatcherAngle <= -180){
+		lR = true;
+		Rl = false;
+	} else if(WatcherAngle >= 0){
+		lR = false;
+		Rl = true;
+	}
+
+	if(lR)
+		WatcherAngle+= .1f;
+	else if(Rl)
+		WatcherAngle-= .1f;
+
+	cout << WatcherAngle << endl;
 
 	if(SDL_GetTicks() > fireTime)
 	{
@@ -135,7 +151,7 @@ void Watcher::Update(float deltaTime, SDL_Rect tankRect)
 			CreateBullet(tankRect);
 		}
 
-		fireTime = SDL_GetTicks() + (rand() % 3 + 1) * 1000;
+		fireTime = SDL_GetTicks() + (rand() % 3 + 1) * 3000;
 	}
 
 	// update the Watcher's bullets
@@ -145,7 +161,7 @@ void Watcher::Update(float deltaTime, SDL_Rect tankRect)
 			if(lightList[i].active)
 			{
 				// draw tthe bullet
-				lightList[i].Update(deltaTime);
+				lightList[i].Update(deltaTime, baseRect);
 			}
 		}
 }
@@ -159,7 +175,7 @@ void Watcher::CreateBullet(SDL_Rect target)
 		// see if the bulelt is active
 		if(lightList[i].active == false)
 		{
-			lightList[i].Start(target, baseRect);
+			lightList[i].Start(WatcherAngle);
 
 			// player the over sound = plays fine through levels, must pause for Quit
 			//Mix_PlayChannel(-1, fire, 0);
@@ -167,7 +183,7 @@ void Watcher::CreateBullet(SDL_Rect target)
 			// set the bullet to active
 			lightList[i].active = true;
 
-			// use some math in the x pos to get the bulelt clos to
+			// use some math in the x pos to get the bullet close to
 			// the center of the Watcher
 			lightList[i].posRect.x = ((baseRect.x + (baseRect.w/2)) - (lightList[i].posRect.w/2));
 			lightList[i].posRect.y = ((baseRect.y + (baseRect.h/2)) - (lightList[i].posRect.h/2));

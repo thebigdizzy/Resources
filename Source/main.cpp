@@ -1133,7 +1133,7 @@ int main(int argc, char* argv[]) {
 	Copper cop4 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1600.0f, 665, 1);
 
 	// create the watcher coppers
-	Watcher watcher1 = Watcher(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 300, 300);
+	Watcher watcher1 = Watcher(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 650, 1250);
 
 	// middle buildings
 	Building building1 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 0);
@@ -1796,7 +1796,7 @@ int main(int argc, char* argv[]) {
 						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
 						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
 				{
-					bibble.speed = -2000;
+					bibble.speed = 10;
 				}
 				else {
 					bibble.speed = 100;

@@ -7,7 +7,7 @@ WatcherLight::WatcherLight(SDL_Renderer * renderer, string filePath, float x, fl
 	active = false;
 
 	// set the bullet speed
-	speed = 100.0f;
+	speed = 10.0f;
 
 	// create the texture from the passed Renderer and created surface
 	texture = IMG_LoadTexture(renderer, filePath.c_str());
@@ -27,18 +27,17 @@ WatcherLight::WatcherLight(SDL_Renderer * renderer, string filePath, float x, fl
 	// set the float position values of the texture for precision loss
 	pos_X = x;
 	pos_Y = y;
+	initX = x;
+	initY = y;
+
+	comeBack = false;
 }
 
 // reset the bullet method
-void WatcherLight::Start(SDL_Rect playerPos, SDL_Rect turretPos)
+void WatcherLight::Start(float angle)
 {
-	player.x = playerPos.x;
-	player.y = playerPos.y;
-
-	turret.x = turretPos.x;
-	turret.y = turretPos.y;
-
-	distance = sqrt((player.x - turret.x) * (player.x - turret.x) + (player.y - turret.y) * (player.y - turret.y));
+	// initialize the angle
+	startAngle = angle;
 }
 
 // reset the bullet method
@@ -48,10 +47,11 @@ void WatcherLight::Reset()
 	posRect.x = -3000;
 
 	// update the pos_X for precision
-	pos_X = posRect.x;
+	pos_X = initX = posRect.x;
 
 	// deactivate the bullet
 	active = false;
+	comeBack = false;
 }
 
 // bullet draw method
@@ -61,20 +61,60 @@ void WatcherLight::Draw(SDL_Renderer *renderer)
 }
 
 // bullet update method
-void WatcherLight::Update(float deltaTime)
+void WatcherLight::Update(float deltaTime, SDL_Rect watcher)
 {
+	turret.x = watcher.x;
+	turret.y = watcher.y;
+	turret.w = watcher.w;
+	turret.h = watcher.h;
 
-	// get direction values to move with
-	float vX = ((player.x - 50) - turret.x) / distance;
-	float vY = ((player.y - 50) - turret.y) / distance;
+	float distance1 = sqrt((turret.x - posRect.x) * (turret.x - posRect.x) + (turret.y - posRect.y) * (turret.y - posRect.y));
 
-	// increment the bullet position by vX and vY each frame
-	pos_X += (vX * speed * deltaTime);
-	pos_Y += (vY * speed * deltaTime);
+	//cout << distance1 << endl;
 
-	// update the bullet position with code to account for precision loss
-	posRect.x = (int)(pos_X + .5f);
-	posRect.y = (int)(pos_Y + .5f);
+	if(distance1 > 300){
+		comeBack = true;
+	}
+
+	if(!comeBack){
+		// get direction values to move with
+		//float vX = ((player.x - 50) - turret.x) / distance;
+		//float vY = ((player.y - 50) - turret.y) / distance;
+
+		float radians = (startAngle * 3.14) / 180;
+
+		float move_x = speed * cos(radians);
+		float move_y = speed * sin(radians);
+
+		// increment the bullet position by vX and vY each frame
+		pos_X += (move_x * speed * deltaTime);
+		pos_Y += (move_y * speed * deltaTime);
+
+		// update the bullet position with code to account for precision loss
+		posRect.x = (int)(pos_X + .5f);
+		posRect.y = (int)(pos_Y + .5f);
+	} else {
+		// get direction values to move with
+		//float vX = ((player.x - 50) - turret.x) / distance;
+		//float vY = ((player.y - 50) - turret.y) / distance;
+
+		float radians = (startAngle * 3.14) / 180;
+
+		float move_x = speed * cos(radians);
+		float move_y = speed * sin(radians);
+
+		// increment the bullet position by vX and vY each frame
+		pos_X -= (move_x * speed * deltaTime);
+		pos_Y -= (move_y * speed * deltaTime);
+
+		// update the bullet position with code to account for precision loss
+		posRect.x = (int)(pos_X + .5f);
+		posRect.y = (int)(pos_Y + .5f);
+
+		if(SDL_HasIntersection(&turret, &posRect)){
+			Reset();
+		}
+	}
 
 	// check to see if the bullet is off the top of the screen
 	// and deactivate and move off screen
@@ -97,7 +137,7 @@ void WatcherLight::LightMoveX(float tankSpeed, float deltaTime)
 void WatcherLight::LightMoveY(float tankSpeed, float deltaTime)
 {
 	pos_Y += (tankSpeed)* deltaTime;
-	
+
 	// update the bullet position with code to account for precision loss
 	posRect.y = (int)(pos_Y + .5f);
 }

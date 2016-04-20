@@ -32,14 +32,19 @@ public:
 	float speed;
 
 	float pos_X, pos_Y;
+	float initX, initY;
 
-	SDL_Point turret, player;
+	SDL_Point player, initTurret;
+	SDL_Rect turret;
+	bool comeBack;
+
+	float startAngle;
 
 	float distance;
 
 	WatcherLight(SDL_Renderer *renderer, string filePath, float x, float y);
 
-	void Update(float deltaTime);
+	void Update(float deltaTime, SDL_Rect watcher);
 
 	void Draw(SDL_Renderer *renderer);
 
@@ -50,5 +55,5 @@ public:
 	void Reset();
 
 	// bullet start
-	void Start(SDL_Rect playerPos, SDL_Rect turretPos);
+	void Start(float angle);
 };
