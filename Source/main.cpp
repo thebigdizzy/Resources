@@ -34,6 +34,7 @@
 #include "tank.h"
 #include "Building.h"
 #include "copper.h"
+#include "watcher.h"
 using namespace std;
 
 // CODE FOR FRAME RATE INDEPENDENCE
@@ -1128,6 +1129,11 @@ int main(int argc, char* argv[]) {
 	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 512.0f, 384.0f);
 	Copper cop1 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 350.0f, 0);
 	Copper cop2 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1600.0f, 220.0f, 1);
+	Copper cop3 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 795, 0);
+	Copper cop4 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1600.0f, 665, 1);
+
+	// create the watcher coppers
+	Watcher watcher1 = Watcher(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 300, 300);
 
 	// middle buildings
 	Building building1 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 0);
@@ -1619,6 +1625,11 @@ int main(int argc, char* argv[]) {
 				// update the coppers
 				cop1.Update(deltaTime, bibble.posRect);
 				cop2.Update(deltaTime, bibble.posRect);
+				cop3.Update(deltaTime, bibble.posRect);
+				cop4.Update(deltaTime, bibble.posRect);
+
+				// update the watchers
+				watcher1.Update(deltaTime, bibble.posRect);
 
 				// move background long the x axis
 				// right
@@ -1642,6 +1653,10 @@ int main(int argc, char* argv[]) {
 
 						cop1.eCopperMoveX(-bibble.speed, deltaTime);
 						cop2.eCopperMoveX(-bibble.speed, deltaTime);
+						cop3.eCopperMoveX(-bibble.speed, deltaTime);
+						cop4.eCopperMoveX(-bibble.speed, deltaTime);
+
+						watcher1.TankMoveX(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1678,6 +1693,10 @@ int main(int argc, char* argv[]) {
 
 						cop1.eCopperMoveX(bibble.speed, deltaTime);
 						cop2.eCopperMoveX(bibble.speed, deltaTime);
+						cop3.eCopperMoveX(bibble.speed, deltaTime);
+						cop4.eCopperMoveX(bibble.speed, deltaTime);
+
+						watcher1.TankMoveX(bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1715,6 +1734,10 @@ int main(int argc, char* argv[]) {
 
 						cop1.eCopperMoveY(-bibble.speed, deltaTime);
 						cop2.eCopperMoveY(-bibble.speed, deltaTime);
+						cop3.eCopperMoveY(-bibble.speed, deltaTime);
+						cop4.eCopperMoveY(-bibble.speed, deltaTime);
+
+						watcher1.TankMoveY(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1750,6 +1773,10 @@ int main(int argc, char* argv[]) {
 
 						cop1.eCopperMoveY(bibble.speed, deltaTime);
 						cop2.eCopperMoveY(bibble.speed, deltaTime);
+						cop3.eCopperMoveY(bibble.speed, deltaTime);
+						cop4.eCopperMoveY(bibble.speed, deltaTime);
+
+						watcher1.TankMoveY(bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1789,6 +1816,11 @@ int main(int argc, char* argv[]) {
 				// draw the coppers
 				cop1.Draw(renderer);
 				cop2.Draw(renderer);
+				cop3.Draw(renderer);
+				cop4.Draw(renderer);
+
+				// draw the watchers
+				watcher1.Draw(renderer);
 
 				building1.Draw(renderer);
 				building2.Draw(renderer);

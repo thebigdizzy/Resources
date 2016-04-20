@@ -37,12 +37,14 @@ public:
 	// initial position
 	float sPosX, sPosY;
 	float posX, posY;
+	// light position
+	float lPosX, lPosY;
 
 	string eCopperPath;
 
-	SDL_Texture *eCopper;
+	SDL_Texture *flashLight;
 
-	SDL_Rect eCopperRect;
+	SDL_Rect fLightRect;
 
 	float x, y, CopperAngle;
 
