@@ -30,9 +30,11 @@ Copper::Copper(SDL_Renderer *renderer, string filePath, string audioPath, float 
 		dn = false;
 	}
 
+	
+
 	//cAnim = Mix_LoadWAV((audioPath + "fire.wav").c_str());
 
-	//string basePath = filePath + "Copper.png";
+	string basePath = filePath + "flashLightCopper.png";
 
 	// create a pool of explosions - 20
 	for (int i = 0; i < 2; i++)
@@ -48,14 +50,22 @@ Copper::Copper(SDL_Renderer *renderer, string filePath, string audioPath, float 
 	posY = y;
 	sPosX = x;
 	sPosY = y;
+	lPosX = x + 50;
+	lPosY = y - 25;
 
-	//eCopper = IMG_LoadTexture(renderer, basePath.c_str());
+	flashLight = IMG_LoadTexture(renderer, basePath.c_str());
 
 	cAnim[0].posRect.x = x;
 	cAnim[0].posRect.y = y;
 
+	fLightRect.x = x;
+	fLightRect.y = y;
+
 	int w, h;
-	//SDL_QueryTexture(eCopper, NULL, NULL, &w, &h);
+	SDL_QueryTexture(flashLight, NULL, NULL, &w, &h);
+	fLightRect.w = w*4;
+	fLightRect.h = h*4;
+
 	//cAnim[0].posRect.w = 100;
 	//cAnim[0].posRect.h = 100;
 
@@ -64,14 +74,14 @@ Copper::Copper(SDL_Renderer *renderer, string filePath, string audioPath, float 
 
 	speed = 70;
 
-	center.x = cAnim[0].posRect.x + 75;
-	center.y = cAnim[0].posRect.y + 95;
-
 	health = 10;
 
 	CopperAngle = 0;
 
 	MakeCopper(x, y);
+
+	center.x = -25;
+	center.y = fLightRect.h / 2 - 5;
 }
 
 void Copper::Update(float deltaTime, SDL_Rect CopperRect)
@@ -85,6 +95,8 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 	double distancey = (cAnim[0].posRect.y - CopperRect.y) * (cAnim[0].posRect.y - CopperRect.y);
 
 	double calcdistance = sqrt(distancex + distancey);
+
+	cout << "angle: " << center.x << endl;
 
 	/*if (calcdistance <= 1000)
 	{
@@ -161,13 +173,13 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 			}
 		}
 
-		//cout << idNum << endl;
+		//lPosX = center.x * cos(((CopperAngle)* M_PI) / 180);
+		//lPosY = center.y * sin(((CopperAngle)* M_PI) / 180);
 
 		if (!turn) {
 			//CopperAngle = atan2(y, x) * 180 / 3.14;
 
 			//float radians = (0 * 3.14) / 180;
-
 
 			posT_X += (move_x)* deltaTime;
 			posT_Y += (move_y)* deltaTime;
@@ -175,8 +187,14 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 			posX += (move_x)* deltaTime;
 			posY += (move_y)* deltaTime;
 
+			lPosX += (move_x)* deltaTime;
+			lPosY += (move_y)* deltaTime;
+
 			cAnim[0].posRect.x = (int)(posT_X + 0.5f);
 			cAnim[0].posRect.y = (int)(posT_Y + 0.5f);
+
+			fLightRect.x = (int)(lPosX + 0.5f);
+			fLightRect.y = (int)(lPosY + 0.5f);
 		}
 	}
 }
@@ -184,6 +202,7 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 void Copper::Draw(SDL_Renderer *renderer)
 {
 	cAnim[0].Draw(renderer, CopperAngle);
+	SDL_RenderCopyEx(renderer, flashLight, NULL, &fLightRect, CopperAngle, &center, SDL_FLIP_NONE);
 }
 
 void Copper::Reset()
@@ -210,15 +229,19 @@ void Copper::RemoveHealth()
 void Copper::eCopperMoveX(float CopperSpeed, float deltaTime)
 {
 	posT_X += (CopperSpeed)* deltaTime;
+	lPosX += (CopperSpeed)* deltaTime;
 
 	cAnim[0].posRect.x = (int)(posT_X + 0.5f);
+	fLightRect.x = (int)(lPosX + 0.5f);
 }
 
 void Copper::eCopperMoveY(float CopperSpeed, float deltaTime)
 {
 	posT_Y += (CopperSpeed)* deltaTime;
+	lPosY += (CopperSpeed)* deltaTime;
 
 	cAnim[0].posRect.y = (int)(posT_Y + 0.5f);
+	fLightRect.y = (int)(lPosY + 0.5f);
 }
 
 void Copper::MakeCopper(int x, int y)
