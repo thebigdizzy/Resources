@@ -174,7 +174,7 @@ void UpdateCursor(float deltaTime) {
 
 // variables for all Menus button over
 bool players1Over = false, players2Over = false, instructionsOver = false,
-quitOver = false, menuOver = false, playOver = false;
+		quitOver = false, menuOver = false, playOver = false;
 
 // class header includes
 //#include "player.h"
@@ -267,12 +267,12 @@ int main(int argc, char* argv[]) {
 
 	// Create an application window with the following settings:
 	window = SDL_CreateWindow("An SDL2 window",		// window title
-		SDL_WINDOWPOS_UNDEFINED,           		// initial x position
-		SDL_WINDOWPOS_UNDEFINED,           		// initial y position
-		1024,                               	// width, in pixels
-		768,                               		// height, in pixels
-		SDL_WINDOW_OPENGL                  		// flags - see below
-		);
+			SDL_WINDOWPOS_UNDEFINED,           		// initial x position
+			SDL_WINDOWPOS_UNDEFINED,           		// initial y position
+			1024,                               	// width, in pixels
+			768,                               		// height, in pixels
+			SDL_WINDOW_OPENGL                  		// flags - see below
+	);
 
 	// Check that the window was successfully created
 	if (window == NULL) {
@@ -1113,7 +1113,7 @@ int main(int argc, char* argv[]) {
 	SDL_UpdateWindowSurface(window);
 	 */
 
-	 // ***** Turn on Game Controller Events
+	// ***** Turn on Game Controller Events
 	SDL_GameControllerEventState(SDL_ENABLE);
 
 	//***** Set up Game Controller 1 variable *****
@@ -1607,7 +1607,7 @@ int main(int argc, char* argv[]) {
 		case LEVEL1:
 			level1 = true;
 			alreadyOver = false;
-			
+
 			bkgdRect.x = 0;
 			bkgdRect.y = 0;
 			X_pos = 0;
@@ -1911,8 +1911,8 @@ int main(int argc, char* argv[]) {
 				}
 
 				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
-					SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
-					SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
+						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
 				{
 					bibble.speed = 10;
 				}
@@ -1960,6 +1960,16 @@ int main(int argc, char* argv[]) {
 
 				// SDL Render present
 				SDL_RenderPresent(renderer);
+
+				// check the player's health
+				// if it's below zero, then go to lose scene
+				// else continue
+				if(bibble.playerHealth <= 0)
+				{
+					level1 = false;
+					gameState = LOSE;
+					break;
+				}
 
 				if (SDL_HasIntersection(&bibble.posRect, &safePlace.safeRect)) {
 					if (bibble.win1) {
@@ -2340,8 +2350,8 @@ int main(int argc, char* argv[]) {
 				}
 
 				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
-					SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
-					SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
+						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
 				{
 					bibble.speed = 10;
 				}
@@ -2402,8 +2412,19 @@ int main(int argc, char* argv[]) {
 					}
 				}
 
+				// check the player's health
+				// if it's below zero, then go to lose scene
+				// else continue
+				if(bibble.playerHealth <= 0)
+				{
+					level1 = false;
+					gameState = LOSE;
+					break;
+				}
+
 				// check for collisions between bibble and the lights
-				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) || cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center))
+				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) ||
+						cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center))
 				{
 					SDL_Delay(3000);
 					level2 = false;

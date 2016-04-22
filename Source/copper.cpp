@@ -244,6 +244,13 @@ void Copper::RemoveHealth()
 	}
 }
 
+int Copper::checkRock(SDL_Rect rock)
+{
+
+
+	return 0;
+}
+
 int Copper::checkCollision(SDL_Rect target, SDL_Point point)
 {
 	SDL_Point difference, object;
@@ -256,7 +263,6 @@ int Copper::checkCollision(SDL_Rect target, SDL_Point point)
 
 	if (object.x - 50 < r + (fLightRect.w) && object.x > 0 && object.y < (fLightRect.h / 2) && object.y >  (-fLightRect.h / 2)) {
 		if (object.x  - 50 < r + (fLightRect.w) && lt || object.x < r + (fLightRect.w) && rt) {
-			//cout << "yep" << endl;
 			return 1;
 		}
 	}

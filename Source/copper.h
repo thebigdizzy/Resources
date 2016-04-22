@@ -71,6 +71,8 @@ public:
 
 	void reset();
 
+	int checkRock(SDL_Rect rock);
+
 	void MakeCopper(int x, int y);
 
 	void RemoveHealth();

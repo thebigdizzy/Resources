@@ -299,6 +299,7 @@ void Tank::Reset()
 	key = 0;
 	win1 = false;
 	win2 = false;
+	playerHealth = 100;
 }
 
 void Tank::OnControllerButton(const SDL_ControllerButtonEvent event)
