@@ -7,12 +7,37 @@ const int JOYSTICK_DEAD_ZONE = 8000;
 Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
 {
 	// load the health GUI
-	//back = IMG_LoadTexture(renderer, (filePath + "health_1.png").c_str());
-	//mid = IMG_LoadTexture(renderer, (filePath + "health_2.png").c_str());
-	//front = IMG_LoadTexture(renderer, (filePath + "health_3.png").c_str());
+	back = IMG_LoadTexture(renderer, (filePath + "health_1.png").c_str());
+	mid = IMG_LoadTexture(renderer, (filePath + "health_2.png").c_str());
+	front = IMG_LoadTexture(renderer, (filePath + "health_3.png").c_str());
+
+	empty = IMG_LoadTexture(renderer, (filePath + "emptyKeyGUI.png").c_str());
+	one = IMG_LoadTexture(renderer, (filePath + "oneKeyGUI.png").c_str());
+	two = IMG_LoadTexture(renderer, (filePath + "twoKeyGUI.png").c_str());
+
+	none = IMG_LoadTexture(renderer, (filePath + "tLegNoneGUI.png").c_str());
+	One = IMG_LoadTexture(renderer, (filePath + "tLegOneGUI.png").c_str());
+	Two = IMG_LoadTexture(renderer, (filePath + "tLegTwoGUI.png").c_str());
+	Three = IMG_LoadTexture(renderer, (filePath + "tLegThreeGUI.png").c_str());
+
+	// set win condition to false
+	win1 = false;
+	win2 = false;
+
+	key = 0;
+
+	emptyR.x = oneR.x = twoR.x = 10;
+	emptyR.y = oneR.y = twoR.y = 10;
+	emptyR.w = oneR.w = twoR.w = 100;
+	emptyR.h = oneR.h = twoR.h = 100;
+
+	noneR.x = OneR.x = TwoR.x = ThreeR.x = 800;
+	noneR.y = OneR.y = TwoR.y = ThreeR.y = 10;
+	noneR.w = OneR.w = TwoR.w = ThreeR.w = 200;
+	noneR.h = OneR.h = TwoR.h = ThreeR.h = 100;
 	
-	backR.x = midR.x = frontR.x = 10;
-	backR.y = midR.y = frontR.y = 50;
+	backR.x = midR.x = frontR.x = 350;
+	backR.y = midR.y = frontR.y = 10;
 	backR.w = midR.w = frontR.w = 300;
 	backR.h = midR.h = frontR.h = 60;
 
@@ -76,24 +101,49 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 		//add to bulletList
 		bulletList.push_back(tmpBullet);
 	}
+
+	lockX = false;
+	lockY = false;
 }
 
 void Tank::eTankHit()
 {
 	playerHealth -= .005f;
 
-	midR.w = playerHealth / maxHealth * 300;
+	//midR.w = playerHealth / maxHealth * 300;
 }
 
 void Tank::eBulletHit()
 {
 	playerHealth -= 5;
 
-	midR.w = playerHealth / maxHealth * 300;
+	//midR.w = playerHealth / maxHealth * 300;
 }
 
 void Tank::Update(float deltaTime)
 {
+	if (tLegNum > 2 && key) {
+		win1 = true;
+	}
+	else {
+		win1 = false;
+	}
+
+	if (tLegNum > 2 && key > 1) {
+		win2 = true;
+	}
+	else {
+		win2 = false;
+	}
+
+	// update the player's health
+	playerHealth -= .5 * deltaTime;
+
+	// update the player's health GUI
+	midR.w = playerHealth / maxHealth * 300;
+
+
+
 	// check for gamepad input
 	if(Xvalue != 0 || Yvalue != 0)
 	{
@@ -118,37 +168,46 @@ void Tank::Update(float deltaTime)
 	// update floats for precision loss
 	posRect.x = (int)(pos_X + .5f);
 	posRect.y = (int)(pos_Y + .5f);
-
 	} else
 	{
 		tankAngle = oldAngle;
+	}
+
+	if (posRect.x > 511) {
+		lockX = true;
+	}
+	if (posRect.y > 383) {
+		lockY = true;
 	}
 
 	//pos_X += (speed *xDir) * deltaTime;
 	//pos_Y += (speed *yDir) * deltaTime;
 
 	// check if the tank is off screen and set it back
-	if(posRect.x < 511)
-	{
-		posRect.x = 511;
-		pos_X = posRect.x;
-	}
+	if (lockX) {
+		if (posRect.x < 511)
+		{
+			posRect.x = 511;
+			pos_X = posRect.x;
+		}
 
-	if(posRect.x > 513){
-		posRect.x = 513;
-		pos_X = posRect.x;
+		if (posRect.x > 513) {
+			posRect.x = 513;
+			pos_X = posRect.x;
+		}
 	}
+	if (lockY) {
+		if (posRect.y < 383)
+		{
+			posRect.y = 383;
+			pos_Y = posRect.y;
+		}
 
-	if(posRect.y < 383)
-	{
-		posRect.y = 383;
-		pos_Y = posRect.y;
-	}
-
-	if(posRect.y > 385)
-	{
-		posRect.y = 385;
-		pos_Y = posRect.y;
+		if (posRect.y > 385)
+		{
+			posRect.y = 385;
+			pos_Y = posRect.y;
+		}
 	}
 
 		// update the tank's bullets
@@ -178,9 +237,42 @@ void Tank::Update(float deltaTime)
 void Tank::Draw(SDL_Renderer *renderer)
 {
 	SDL_RenderCopyEx(renderer, texture, NULL, &posRect, tankAngle, &center, SDL_FLIP_NONE);
-	//SDL_RenderCopy(renderer, back, NULL, &backR);
-	//SDL_RenderCopy(renderer, mid, NULL, &midR);
-	//SDL_RenderCopy(renderer, front, NULL, &frontR);
+
+	// draw the health bar
+	SDL_RenderCopy(renderer, back, NULL, &backR);
+	SDL_RenderCopy(renderer, mid, NULL, &midR);
+	SDL_RenderCopy(renderer, front, NULL, &frontR);
+
+	// draw the key stuff
+	if (key == 0) {
+		SDL_RenderCopy(renderer, empty, NULL, &emptyR);
+	}
+	else if (key == 1) {
+		SDL_RenderCopy(renderer, one, NULL, &oneR);
+	}
+	else if (key == 2) {
+		SDL_RenderCopy(renderer, two, NULL, &twoR);
+	}
+	else {
+		SDL_RenderCopy(renderer, empty, NULL, &emptyR);
+	}
+
+	// draw the turkey stuff
+	if (tLegNum == 0) {
+		SDL_RenderCopy(renderer, none, NULL, &noneR);
+	}
+	else if (tLegNum == 1) {
+		SDL_RenderCopy(renderer, One, NULL, &OneR);
+	}
+	else if (tLegNum == 2) {
+		SDL_RenderCopy(renderer, Two, NULL, &TwoR);
+	}
+	else if (tLegNum == 3) {
+		SDL_RenderCopy(renderer, Three, NULL, &ThreeR);
+	}
+	else {
+		SDL_RenderCopy(renderer, none, NULL, &noneR);
+	}
 
 	// draw the player's bullets
 	for (int i = 0; i < bulletList.size(); i++)
@@ -192,6 +284,21 @@ void Tank::Draw(SDL_Renderer *renderer)
 		}
 	}
 
+}
+
+void Tank::Reset()
+{
+	posRect.x = 150;
+	posRect.y = 150;
+	lockX = false;
+	lockY = false;
+	pos_X = 150;
+	pos_Y = 150;
+	rocks = 0;
+	tLegNum = 0;
+	key = 0;
+	win1 = false;
+	win2 = false;
 }
 
 void Tank::OnControllerButton(const SDL_ControllerButtonEvent event)
@@ -206,6 +313,45 @@ void Tank::OnControllerButton(const SDL_ControllerButtonEvent event)
 			CreateBullet();
 		}
 	}
+}
+
+int Tank::lightCollision(SDL_Rect light)
+{
+	if (SDL_HasIntersection(&light, &posRect)) {
+		return 1;
+	}
+
+	return 0;
+}
+
+int Tank::turkeyCollision(SDL_Rect tLegRect)
+{
+	if (SDL_HasIntersection(&tLegRect, &posRect)) {
+		tLegNum++;
+		return 1;
+	}
+
+	return 0;
+}
+
+int Tank::rockCollision(SDL_Rect rockRect)
+{
+	if (SDL_HasIntersection(&rockRect, &posRect)) {
+		rocks++;
+		return 1;
+	}
+
+	return 0;
+}
+
+int Tank::keyCollision(SDL_Rect keyRect)
+{
+	if (SDL_HasIntersection(&keyRect, &posRect)) {
+		key++;
+		return 1;
+	}
+
+	return 0;
 }
 
 void Tank::OnControllerAxis(Sint16 X, Sint16 Y)

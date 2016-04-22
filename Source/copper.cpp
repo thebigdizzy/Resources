@@ -55,8 +55,8 @@ Copper::Copper(SDL_Renderer *renderer, string filePath, string audioPath, float 
 
 	flashLight = IMG_LoadTexture(renderer, basePath.c_str());
 
-	cAnim[0].posRect.x = x;
-	cAnim[0].posRect.y = y;
+	cAnim[0].posRect.x = sRect.x = x;
+	cAnim[0].posRect.y = sRect.y = y;
 
 	fLightRect.x = x;
 	fLightRect.y = y;
@@ -216,6 +216,24 @@ void Copper::Reset()
 	active = false;
 }
 
+void Copper::reset()
+{
+	cAnim[0].posRect.x = sRect.x;
+	cAnim[0].posRect.y = sRect.y;
+
+	posT_X = sPosX;
+	posT_Y = sPosY;
+
+	fLightRect.x = sRect.x;
+	fLightRect.y = sRect.y;
+
+	posX = sPosX;
+	posY = sPosY;
+
+	lPosX = sPosX + 50;
+	lPosY = sPosY - 25;
+}
+
 void Copper::RemoveHealth()
 {
 	health -= 1;
@@ -224,6 +242,26 @@ void Copper::RemoveHealth()
 	{
 		Reset();
 	}
+}
+
+int Copper::checkCollision(SDL_Rect target, SDL_Point point)
+{
+	SDL_Point difference, object;
+	difference.x = target.x - fLightRect.x;
+	difference.y = target.y - fLightRect.y;
+	int r = target.w / 2;
+
+	object.x = (difference.x * cos(-CopperAngle * M_PI / 180)) - (difference.y * sin(-CopperAngle * M_PI / 180));
+	object.y = (difference.x * sin(-CopperAngle * M_PI / 180)) + (difference.y * cos(-CopperAngle * M_PI / 180));
+
+	if (object.x - 50 < r + (fLightRect.w) && object.x > 0 && object.y < (fLightRect.h / 2) && object.y >  (-fLightRect.h / 2)) {
+		if (object.x  - 50 < r + (fLightRect.w) && lt || object.x < r + (fLightRect.w) && rt) {
+			//cout << "yep" << endl;
+			return 1;
+		}
+	}
+
+	return 0;
 }
 
 void Copper::eCopperMoveX(float CopperSpeed, float deltaTime)

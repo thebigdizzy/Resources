@@ -44,7 +44,7 @@ public:
 
 	WatcherLight(SDL_Renderer *renderer, string filePath, float x, float y);
 
-	void Update(float deltaTime, SDL_Rect watcher);
+	int Update(float deltaTime, SDL_Rect watcher);
 
 	void Draw(SDL_Renderer *renderer);
 

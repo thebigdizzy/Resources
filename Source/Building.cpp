@@ -23,8 +23,8 @@ Building::Building(SDL_Renderer *renderer, string filePath, string audioPath, fl
 	tBase = IMG_LoadTexture(renderer, basePath.c_str());
 
 	// set the SDL)Rect x and y for the base image
-	baseRect.x = x;
-	baseRect.y = y;
+	baseRect.x = sRect.x = x;
+	baseRect.y = sRect.y = y;
 
 	// use SDL_QueryTexture to get the w and h of the base's texture
 	int w, h;
@@ -32,14 +32,13 @@ Building::Building(SDL_Renderer *renderer, string filePath, string audioPath, fl
 	baseRect.w = w;
 	baseRect.h = h;
 
-
 	// create the center point of the barrel texture for rotation
 	center.x = 13;
 	center.y = 13;
 
 	// update the float values for movement
-	posB_X = baseRect.x;
-	posB_Y = baseRect.y;
+	posB_X = sPosX = baseRect.x;
+	posB_Y = sPosY = baseRect.y;
 }
 
 // tank move the Building in X
@@ -68,6 +67,15 @@ void Building::Draw(SDL_Renderer *renderer)
 {
 	// draw the base
 	SDL_RenderCopy(renderer, tBase, NULL, &baseRect);
+}
+
+void Building::Reset()
+{
+	posB_X = sPosX;
+	posB_Y = sPosY;
+
+	baseRect.x = sRect.x;
+	baseRect.y = sRect.y;
 }
 
 // tank update method

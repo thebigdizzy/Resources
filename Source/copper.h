@@ -44,7 +44,7 @@ public:
 
 	SDL_Texture *flashLight;
 
-	SDL_Rect fLightRect;
+	SDL_Rect fLightRect, sRect;
 
 	float x, y, CopperAngle;
 
@@ -69,9 +69,13 @@ public:
 
 	void Reset();
 
+	void reset();
+
 	void MakeCopper(int x, int y);
 
 	void RemoveHealth();
+
+	int checkCollision(SDL_Rect target, SDL_Point point);
 
 	void eCopperMoveX(float CopperSpeed, float deltaTime);
 

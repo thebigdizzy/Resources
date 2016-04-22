@@ -35,6 +35,10 @@
 #include "Building.h"
 #include "copper.h"
 #include "watcher.h"
+#include "pickUp.h"
+#include "rockPickUp.h"
+#include "safePlace.h"
+#include "key.h"
 using namespace std;
 
 // CODE FOR FRAME RATE INDEPENDENCE
@@ -170,7 +174,7 @@ void UpdateCursor(float deltaTime) {
 
 // variables for all Menus button over
 bool players1Over = false, players2Over = false, instructionsOver = false,
-		quitOver = false, menuOver = false, playOver = false;
+quitOver = false, menuOver = false, playOver = false;
 
 // class header includes
 //#include "player.h"
@@ -263,12 +267,12 @@ int main(int argc, char* argv[]) {
 
 	// Create an application window with the following settings:
 	window = SDL_CreateWindow("An SDL2 window",		// window title
-			SDL_WINDOWPOS_UNDEFINED,           		// initial x position
-			SDL_WINDOWPOS_UNDEFINED,           		// initial y position
-			1024,                               	// width, in pixels
-			768,                               		// height, in pixels
-			SDL_WINDOW_OPENGL                  		// flags - see below
-	);
+		SDL_WINDOWPOS_UNDEFINED,           		// initial x position
+		SDL_WINDOWPOS_UNDEFINED,           		// initial y position
+		1024,                               	// width, in pixels
+		768,                               		// height, in pixels
+		SDL_WINDOW_OPENGL                  		// flags - see below
+		);
 
 	// Check that the window was successfully created
 	if (window == NULL) {
@@ -443,7 +447,6 @@ int main(int argc, char* argv[]) {
 	bkgdRect.w = 2048;
 
 	bkgdRect.h = 1536;
-
 
 	//********** Create Main Menu **********
 
@@ -1110,7 +1113,7 @@ int main(int argc, char* argv[]) {
 	SDL_UpdateWindowSurface(window);
 	 */
 
-	// ***** Turn on Game Controller Events
+	 // ***** Turn on Game Controller Events
 	SDL_GameControllerEventState(SDL_ENABLE);
 
 	//***** Set up Game Controller 1 variable *****
@@ -1126,7 +1129,7 @@ int main(int argc, char* argv[]) {
 	//gGameController1 = SDL_GameControllerOpen(1);
 
 	// create Bibble
-	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 512.0f, 384.0f);
+	Tank bibble = Tank(renderer, 0, s_cwd_images.c_str(), audio_dir.c_str(), 150, 150);
 	Copper cop1 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 350.0f, 0);
 	Copper cop2 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1600.0f, 220.0f, 1);
 	Copper cop3 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 795, 0);
@@ -1134,6 +1137,7 @@ int main(int argc, char* argv[]) {
 
 	// create the watcher coppers
 	Watcher watcher1 = Watcher(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 650, 1250);
+	Watcher watcher2 = Watcher(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1350, 1250);
 
 	// middle buildings
 	Building building1 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 0);
@@ -1149,9 +1153,42 @@ int main(int argc, char* argv[]) {
 	Building building7 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 2);
 	Building building8 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 2);
 
+	// Safe Place
+	Safe safePlace = Safe(renderer, s_cwd_images.c_str(), 1750, 1300);
+
+	// key pickup
+	Key key1 = Key(renderer, s_cwd_images.c_str(), 1000, 900);
+	Key key2 = Key(renderer, s_cwd_images.c_str(), 1000, 160);
+
+	// make turkey leg pickups
+
+	vector<Food> tLeg;
+	vector<Rock> rock;
+	int spaceX = 200;
+	int spaceY = 1350;
+
+	for (int i = 0; i < 3; i++) {
+		Food temp = Food(renderer, s_cwd_images.c_str(), spaceX, spaceY);
+		tLeg.push_back(temp);
+		spaceX += 800;
+		spaceY -= 590;
+	}
+
+	int rockX = 950;
+	int rockY = 1350;
+	for (int i = 0; i < 3; i++) {
+		Rock temp = Rock(renderer, s_cwd_images.c_str(), rockX, rockY);
+		rock.push_back(temp);
+		//rockX += 800;
+		rockY -= 590;
+	}
+
 	float X_pos = 0.0f;
 
 	float Y_pos = 0.0f;
+
+	// set up a bool for locking in bibble to the middle of the screen
+	bool lock;
 
 	// ***** SDL Event to handle input
 	SDL_Event event;
@@ -1160,7 +1197,7 @@ int main(int argc, char* argv[]) {
 	enum GameState { MENU, INSTRUCTIONS, LEVEL1, LEVEL2, BACKSTORY, WIN, LOSE };
 
 	// ***** set up the initial state
-	GameState gameState = LEVEL1;
+	GameState gameState = LEVEL2;
 
 	// bool value to control movement through the states
 	bool menu = false, instructions = false, level1 = false, level2 = false, backStory = false, win = false, lose = false, quit = false;
@@ -1570,6 +1607,43 @@ int main(int argc, char* argv[]) {
 		case LEVEL1:
 			level1 = true;
 			alreadyOver = false;
+			
+			bkgdRect.x = 0;
+			bkgdRect.y = 0;
+			X_pos = 0;
+			Y_pos = 0;
+			for (int i = 0; i < 3; i++) {
+				tLeg[i].Reset();
+				rock[i].Reset();
+			}
+
+			key1.Reset();
+
+			// reset Bibble
+			bibble.Reset();
+
+			// reset the watchers
+			watcher1.Reset();
+			watcher2.Reset();
+
+			// reset the coppers
+			cop1.reset();
+			cop2.reset();
+			cop3.reset();
+			cop4.reset();
+
+			// reset all of the buildings
+			building1.Reset();
+			building2.Reset();
+			building3.Reset();
+			building4.Reset();
+			building5.Reset();
+			building6.Reset();
+			building7.Reset();
+			building8.Reset();
+
+			// reset the safe place
+			safePlace.Reset();
 
 			while (level1)
 			{
@@ -1630,6 +1704,9 @@ int main(int argc, char* argv[]) {
 
 				// update the watchers
 				watcher1.Update(deltaTime, bibble.posRect);
+				watcher2.Update(deltaTime, bibble.posRect);
+
+				lock = false;
 
 				// move background long the x axis
 				// right
@@ -1651,12 +1728,22 @@ int main(int argc, char* argv[]) {
 						building7.TankMoveX(-bibble.speed, deltaTime);
 						building8.TankMoveX(-bibble.speed, deltaTime);
 
+						safePlace.TankMoveX(-bibble.speed, deltaTime);
+
 						cop1.eCopperMoveX(-bibble.speed, deltaTime);
 						cop2.eCopperMoveX(-bibble.speed, deltaTime);
 						cop3.eCopperMoveX(-bibble.speed, deltaTime);
 						cop4.eCopperMoveX(-bibble.speed, deltaTime);
 
 						watcher1.TankMoveX(-bibble.speed, deltaTime);
+						watcher2.TankMoveX(-bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveX(-bibble.speed, deltaTime);
+							rock[i].TankMoveX(-bibble.speed, deltaTime);
+						}
+
+						key1.TankMoveX(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1672,6 +1759,7 @@ int main(int argc, char* argv[]) {
 						X_pos = bkgdRect.x;
 					}
 				}
+
 				// left
 				if ((bibble.posRect.x <= 512) && (bibble.Xvalue < -8000))
 				{
@@ -1691,12 +1779,22 @@ int main(int argc, char* argv[]) {
 						building7.TankMoveX(bibble.speed, deltaTime);
 						building8.TankMoveX(bibble.speed, deltaTime);
 
+						safePlace.TankMoveX(bibble.speed, deltaTime);
+
 						cop1.eCopperMoveX(bibble.speed, deltaTime);
 						cop2.eCopperMoveX(bibble.speed, deltaTime);
 						cop3.eCopperMoveX(bibble.speed, deltaTime);
 						cop4.eCopperMoveX(bibble.speed, deltaTime);
 
 						watcher1.TankMoveX(bibble.speed, deltaTime);
+						watcher2.TankMoveX(bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveX(bibble.speed, deltaTime);
+							rock[i].TankMoveX(bibble.speed, deltaTime);
+						}
+
+						key1.TankMoveX(bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1732,12 +1830,22 @@ int main(int argc, char* argv[]) {
 						building7.TankMoveY(-bibble.speed, deltaTime);
 						building8.TankMoveY(-bibble.speed, deltaTime);
 
+						safePlace.TankMoveY(-bibble.speed, deltaTime);
+
 						cop1.eCopperMoveY(-bibble.speed, deltaTime);
 						cop2.eCopperMoveY(-bibble.speed, deltaTime);
 						cop3.eCopperMoveY(-bibble.speed, deltaTime);
 						cop4.eCopperMoveY(-bibble.speed, deltaTime);
 
 						watcher1.TankMoveY(-bibble.speed, deltaTime);
+						watcher2.TankMoveY(-bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveY(-bibble.speed, deltaTime);
+							rock[i].TankMoveY(-bibble.speed, deltaTime);
+						}
+
+						key1.TankMoveY(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1771,12 +1879,22 @@ int main(int argc, char* argv[]) {
 						building7.TankMoveY(bibble.speed, deltaTime);
 						building8.TankMoveY(bibble.speed, deltaTime);
 
+						safePlace.TankMoveY(bibble.speed, deltaTime);
+
 						cop1.eCopperMoveY(bibble.speed, deltaTime);
 						cop2.eCopperMoveY(bibble.speed, deltaTime);
 						cop3.eCopperMoveY(bibble.speed, deltaTime);
 						cop4.eCopperMoveY(bibble.speed, deltaTime);
 
 						watcher1.TankMoveY(bibble.speed, deltaTime);
+						watcher2.TankMoveY(bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveY(bibble.speed, deltaTime);
+							rock[i].TankMoveY(bibble.speed, deltaTime);
+						}
+
+						key1.TankMoveY(bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -1793,8 +1911,8 @@ int main(int argc, char* argv[]) {
 				}
 
 				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
+					SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
 				{
 					bibble.speed = 10;
 				}
@@ -1803,15 +1921,11 @@ int main(int argc, char* argv[]) {
 				}
 
 				// Start Drawing
-
 				// Clear SDL renderer
 				SDL_RenderClear(renderer);
 
 				// Draw the bkgd1 image
 				SDL_RenderCopy(renderer, level1bkgd, NULL, &bkgdRect);
-
-				// draw bibble
-				bibble.Draw(renderer);
 
 				// draw the coppers
 				cop1.Draw(renderer);
@@ -1821,6 +1935,7 @@ int main(int argc, char* argv[]) {
 
 				// draw the watchers
 				watcher1.Draw(renderer);
+				watcher2.Draw(renderer);
 
 				building1.Draw(renderer);
 				building2.Draw(renderer);
@@ -1831,13 +1946,133 @@ int main(int argc, char* argv[]) {
 				building7.Draw(renderer);
 				building8.Draw(renderer);
 
+				// draw bibble
+				bibble.Draw(renderer);
+
+				safePlace.Draw(renderer);
+
+				for (int i = 0; i < 3; i++) {
+					tLeg[i].Draw(renderer);
+					rock[i].Draw(renderer);
+				}
+
+				key1.Draw(renderer);
+
 				// SDL Render present
 				SDL_RenderPresent(renderer);
+
+				if (SDL_HasIntersection(&bibble.posRect, &safePlace.safeRect)) {
+					if (bibble.win1) {
+						SDL_Delay(3000);
+						level1 = false;
+						gameState = LEVEL2;
+						break;
+					}
+					else {
+						// display what is needed to get in
+					}
+				}
+
+				// check for collisions between bibble and the lights
+				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) || cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center))
+				{
+					SDL_Delay(3000);
+					level1 = false;
+					gameState = LOSE;
+					break;
+				}
+
+				// check for collision with the turkey legs
+				for (int i = 0; i < tLeg.size(); i++) {
+					if (bibble.turkeyCollision(tLeg[i].tLegRect)) {
+						tLeg[i].tLegRect.x = tLeg[i].posJ_X = -3000;
+						tLeg[i].active = false;
+					}
+				}
+
+				if (bibble.keyCollision(key1.keyRect))
+				{
+					key1.keyRect.x = -3000;
+					key1.active = false;
+					key1.posJ_X = -3000;
+				}
+
+				for (int i = 0; i < rock.size(); i++) {
+					if (bibble.rockCollision(rock[i].rockRect)) {
+						rock[i].rockRect.x = rock[i].posJ_X = -3000;
+						rock[i].active = false;
+					}
+				}
+
+				// light collision check for watcher 1
+				for (int i = 0; i < watcher1.lightList.size(); i++) {
+					if (watcher1.lightList[i].active) {
+						if (bibble.lightCollision(watcher1.lightList[i].posRect)) {
+							watcher1.lightList[i].Reset();
+							SDL_Delay(3000);
+							level1 = false;
+							gameState = LOSE;
+							break;
+						}
+					}
+				}
+
+				// light collision check for watcher 2
+				for (int i = 0; i < watcher2.lightList.size(); i++) {
+					if (watcher2.lightList[i].active) {
+						if (bibble.lightCollision(watcher2.lightList[i].posRect)) {
+							watcher2.lightList[i].Reset();
+							SDL_Delay(3000);
+							level1 = false;
+							gameState = LOSE;
+							break;
+						}
+					}
+				}
 			}
 			break;
 		case LEVEL2:
 			level2 = true;
 			alreadyOver = false;
+
+			bkgdRect.x = 0;
+			bkgdRect.y = 0;
+			X_pos = 0;
+			Y_pos = 0;
+			for (int i = 0; i < 3; i++) {
+				tLeg[i].Reset();
+				rock[i].Reset();
+			}
+
+			// reset Bibble
+			bibble.Reset();
+			bibble.key = 1;
+
+			// reset the watchers
+			watcher1.Reset();
+			watcher2.Reset();
+
+			// reset the coppers
+			cop1.reset();
+			cop2.reset();
+			cop3.reset();
+			cop4.reset();
+
+			// reset all of the buildings
+			building1.Reset();
+			building2.Reset();
+			building3.Reset();
+			building4.Reset();
+			building5.Reset();
+			building6.Reset();
+			building7.Reset();
+			building8.Reset();
+
+			// reset the key for the second level
+			key2.Reset();
+
+			// reset the safe place
+			safePlace.Reset();
 
 			while (level2)
 			{
@@ -1861,19 +2096,15 @@ int main(int argc, char* argv[]) {
 						{
 							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_A)
 							{
-								if (menuOver) {
-									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
-									Mix_PlayChannel(-1, pressSound, 0);
-									level2 = false;
-									gameState = MENU;
-								}
+								bibble.OnControllerButton(event.cbutton);
+							}
 
-								if (playOver) {
-									// Play the Over Sound - plays fine through levels, must pause/delat for QUIT
-									Mix_PlayChannel(-1, pressSound, 0);
-									level1 = false;
-									gameState = LEVEL2;
-								}
+							if (event.cbutton.button == SDL_CONTROLLER_BUTTON_X)
+							{
+								SDL_Delay(500);
+								level2 = false;
+								quit = true;
+								break;
 							}
 						}
 						break;
@@ -1888,20 +2119,27 @@ int main(int argc, char* argv[]) {
 				const Sint16 Xvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTX);
 				const Sint16 Yvalue = SDL_GameControllerGetAxis(gGameController0, SDL_CONTROLLER_AXIS_LEFTY);
 
-				// update
-				//UpdateBackground(deltaTime);
-
-				// update cursor
-				//UpdateCursor(deltaTime);
-
 				// pass to player 1
 				bibble.OnControllerAxis(Xvalue, Yvalue);
 
-				// update the player 1 tank
+				// update the player
 				bibble.Update(deltaTime);
 
+				// update the coppers
+				cop1.Update(deltaTime, bibble.posRect);
+				cop2.Update(deltaTime, bibble.posRect);
+				cop3.Update(deltaTime, bibble.posRect);
+				cop4.Update(deltaTime, bibble.posRect);
+
+				// update the watchers
+				watcher1.Update(deltaTime, bibble.posRect);
+				watcher2.Update(deltaTime, bibble.posRect);
+
+				lock = false;
+
 				// move background long the x axis
-				if ((bibble.posRect.x > 512) && (bibble.Xvalue > 8000))
+				// right
+				if ((bibble.posRect.x >= 512) && (bibble.Xvalue > 8000))
 				{
 					X_pos -= (bibble.speed) * deltaTime;
 
@@ -1909,13 +2147,50 @@ int main(int argc, char* argv[]) {
 					{
 						bkgdRect.x = (int)(X_pos + .5f);
 
+						// move the buildings
+						building1.TankMoveX(-bibble.speed, deltaTime);
+						building2.TankMoveX(-bibble.speed, deltaTime);
+						building3.TankMoveX(-bibble.speed, deltaTime);
+						building4.TankMoveX(-bibble.speed, deltaTime);
+						building5.TankMoveX(-bibble.speed, deltaTime);
+						building6.TankMoveX(-bibble.speed, deltaTime);
+						building7.TankMoveX(-bibble.speed, deltaTime);
+						building8.TankMoveX(-bibble.speed, deltaTime);
+
+						key2.TankMoveX(-bibble.speed, deltaTime);
+
+						safePlace.TankMoveX(-bibble.speed, deltaTime);
+
+						cop1.eCopperMoveX(-bibble.speed, deltaTime);
+						cop2.eCopperMoveX(-bibble.speed, deltaTime);
+						cop3.eCopperMoveX(-bibble.speed, deltaTime);
+						cop4.eCopperMoveX(-bibble.speed, deltaTime);
+
+						watcher1.TankMoveX(-bibble.speed, deltaTime);
+						watcher2.TankMoveX(-bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveX(-bibble.speed, deltaTime);
+							rock[i].TankMoveX(-bibble.speed, deltaTime);
+						}
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveX(-bibble.speed, deltaTime);
+								}
+						}
+
 					}
 					else {
 						X_pos = bkgdRect.x;
 					}
 				}
 
-				if ((bibble.posRect.x <= 512) && (bibble.Xvalue < 8000))
+				// left
+				if ((bibble.posRect.x <= 512) && (bibble.Xvalue < -8000))
 				{
 					X_pos += (bibble.speed) * deltaTime;
 
@@ -1923,6 +2198,41 @@ int main(int argc, char* argv[]) {
 					{
 						bkgdRect.x = (int)(X_pos + 0.5f);
 
+						// move the buildings
+						building1.TankMoveX(bibble.speed, deltaTime);
+						building2.TankMoveX(bibble.speed, deltaTime);
+						building3.TankMoveX(bibble.speed, deltaTime);
+						building4.TankMoveX(bibble.speed, deltaTime);
+						building5.TankMoveX(bibble.speed, deltaTime);
+						building6.TankMoveX(bibble.speed, deltaTime);
+						building7.TankMoveX(bibble.speed, deltaTime);
+						building8.TankMoveX(bibble.speed, deltaTime);
+
+						key2.TankMoveX(bibble.speed, deltaTime);
+
+						safePlace.TankMoveX(bibble.speed, deltaTime);
+
+						cop1.eCopperMoveX(bibble.speed, deltaTime);
+						cop2.eCopperMoveX(bibble.speed, deltaTime);
+						cop3.eCopperMoveX(bibble.speed, deltaTime);
+						cop4.eCopperMoveX(bibble.speed, deltaTime);
+
+						watcher1.TankMoveX(bibble.speed, deltaTime);
+						watcher2.TankMoveX(bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveX(bibble.speed, deltaTime);
+							rock[i].TankMoveX(bibble.speed, deltaTime);
+						}
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveX(bibble.speed, deltaTime);
+								}
+						}
 					}
 					else {
 						X_pos = bkgdRect.x;
@@ -1930,7 +2240,8 @@ int main(int argc, char* argv[]) {
 				}
 
 				// move background along the y axis
-				if ((bibble.posRect.y > 384) && (bibble.Yvalue > 8000))
+				// down
+				if ((bibble.posRect.y >= 384) && (bibble.Yvalue > 8000))
 				{
 					Y_pos -= (bibble.speed) * deltaTime;
 
@@ -1938,13 +2249,48 @@ int main(int argc, char* argv[]) {
 					{
 						bkgdRect.y = (int)(Y_pos + .5f);
 
+						// move the buildings
+						building1.TankMoveY(-bibble.speed, deltaTime);
+						building2.TankMoveY(-bibble.speed, deltaTime);
+						building3.TankMoveY(-bibble.speed, deltaTime);
+						building4.TankMoveY(-bibble.speed, deltaTime);
+						building5.TankMoveY(-bibble.speed, deltaTime);
+						building6.TankMoveY(-bibble.speed, deltaTime);
+						building7.TankMoveY(-bibble.speed, deltaTime);
+						building8.TankMoveY(-bibble.speed, deltaTime);
+
+						key2.TankMoveY(-bibble.speed, deltaTime);
+
+						safePlace.TankMoveY(-bibble.speed, deltaTime);
+
+						cop1.eCopperMoveY(-bibble.speed, deltaTime);
+						cop2.eCopperMoveY(-bibble.speed, deltaTime);
+						cop3.eCopperMoveY(-bibble.speed, deltaTime);
+						cop4.eCopperMoveY(-bibble.speed, deltaTime);
+
+						watcher1.TankMoveY(-bibble.speed, deltaTime);
+						watcher2.TankMoveY(-bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveY(-bibble.speed, deltaTime);
+							rock[i].TankMoveY(-bibble.speed, deltaTime);
+						}
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveY(-bibble.speed, deltaTime);
+								}
+						}
 					}
 					else {
 						Y_pos = bkgdRect.y;
 					}
 				}
-
-				if ((bibble.posRect.y <= 384) && (bibble.Yvalue < 8000))
+				// up
+				if ((bibble.posRect.y <= 384) && (bibble.Yvalue < -8000))
 				{
 					Y_pos += (bibble.speed) * deltaTime;
 
@@ -1952,31 +2298,165 @@ int main(int argc, char* argv[]) {
 					{
 						bkgdRect.y = (int)(Y_pos + 0.5f);
 
+						// move the buildings
+						building1.TankMoveY(bibble.speed, deltaTime);
+						building2.TankMoveY(bibble.speed, deltaTime);
+						building3.TankMoveY(bibble.speed, deltaTime);
+						building4.TankMoveY(bibble.speed, deltaTime);
+						building5.TankMoveY(bibble.speed, deltaTime);
+						building6.TankMoveY(bibble.speed, deltaTime);
+						building7.TankMoveY(bibble.speed, deltaTime);
+						building8.TankMoveY(bibble.speed, deltaTime);
+
+						key2.TankMoveY(bibble.speed, deltaTime);
+
+						safePlace.TankMoveY(bibble.speed, deltaTime);
+
+						cop1.eCopperMoveY(bibble.speed, deltaTime);
+						cop2.eCopperMoveY(bibble.speed, deltaTime);
+						cop3.eCopperMoveY(bibble.speed, deltaTime);
+						cop4.eCopperMoveY(bibble.speed, deltaTime);
+
+						watcher1.TankMoveY(bibble.speed, deltaTime);
+						watcher2.TankMoveY(bibble.speed, deltaTime);
+
+						for (int i = 0; i < 3; i++) {
+							tLeg[i].TankMoveY(bibble.speed, deltaTime);
+							rock[i].TankMoveY(bibble.speed, deltaTime);
+						}
+
+						for (int i = 0; i < bibble.bulletList.size(); i++)
+						{
+							if (bibble.bulletList[i].active)
+								if (bibble.bulletList[i].stop)
+								{
+									bibble.bulletList[i].TankMoveY(bibble.speed, deltaTime);
+								}
+						}
 					}
 					else {
 						Y_pos = bkgdRect.y;
 					}
 				}
 
-				// if the cursor is not over ANY button, reset the alreadyOver var
-				if (!menuOver && !playOver)
+				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
 				{
-					alreadyOver = false;
+					bibble.speed = 10;
+				}
+				else {
+					bibble.speed = 100;
 				}
 
 				// Start Drawing
-
 				// Clear SDL renderer
 				SDL_RenderClear(renderer);
 
 				// Draw the bkgd1 image
 				SDL_RenderCopy(renderer, level1bkgd, NULL, &bkgdRect);
 
+				// draw the coppers
+				cop1.Draw(renderer);
+				cop2.Draw(renderer);
+				cop3.Draw(renderer);
+				cop4.Draw(renderer);
+
+				// draw the watchers
+				watcher1.Draw(renderer);
+				watcher2.Draw(renderer);
+
+				building1.Draw(renderer);
+				building2.Draw(renderer);
+				building3.Draw(renderer);
+				building4.Draw(renderer);
+				building5.Draw(renderer);
+				building6.Draw(renderer);
+				building7.Draw(renderer);
+				building8.Draw(renderer);
+
+				key2.Draw(renderer);
+
 				// draw bibble
 				bibble.Draw(renderer);
 
+				safePlace.Draw(renderer);
+
+				for (int i = 0; i < 3; i++) {
+					tLeg[i].Draw(renderer);
+					rock[i].Draw(renderer);
+				}
+
 				// SDL Render present
 				SDL_RenderPresent(renderer);
+
+				if (SDL_HasIntersection(&bibble.posRect, &safePlace.safeRect)) {
+					if (bibble.win2) {
+						SDL_Delay(3000);
+						level2 = false;
+						gameState = WIN;
+						break;
+					}
+					else {
+						// display what the player has to do to get in
+					}
+				}
+
+				// check for collisions between bibble and the lights
+				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) || cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center))
+				{
+					SDL_Delay(3000);
+					level2 = false;
+					gameState = LOSE;
+					break;
+				}
+
+				// check for collision with the turkey legs
+				for (int i = 0; i < tLeg.size(); i++) {
+					if (bibble.turkeyCollision(tLeg[i].tLegRect)) {
+						tLeg[i].tLegRect.x = tLeg[i].posJ_X = -3000;
+						tLeg[i].active = false;
+					}
+				}
+
+				for (int i = 0; i < rock.size(); i++) {
+					if (bibble.rockCollision(rock[i].rockRect)) {
+						rock[i].rockRect.x = rock[i].posJ_X = -3000;
+						rock[i].active = false;
+					}
+				}
+
+				if (bibble.keyCollision(key2.keyRect)) {
+					key2.keyRect.x = -3000;
+					key2.active = false;
+					key2.posJ_X = -3000;
+				}
+
+				// light collision check for watcher 1
+				for (int i = 0; i < watcher1.lightList.size(); i++) {
+					if (watcher1.lightList[i].active) {
+						if (bibble.lightCollision(watcher1.lightList[i].posRect)) {
+							watcher1.lightList[i].Reset();
+							SDL_Delay(3000);
+							level2 = false;
+							gameState = LOSE;
+							break;
+						}
+					}
+				}
+
+				// light collision check for watcher 2
+				for (int i = 0; i < watcher2.lightList.size(); i++) {
+					if (watcher2.lightList[i].active) {
+						if (bibble.lightCollision(watcher2.lightList[i].posRect)) {
+							watcher2.lightList[i].Reset();
+							SDL_Delay(3000);
+							level2 = false;
+							gameState = LOSE;
+							break;
+						}
+					}
+				}
 			}
 			break;
 		case BACKSTORY:

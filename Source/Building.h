@@ -44,13 +44,13 @@ public:
 	//SDL_Texture *tBarrel;
 
 	// turret's SDL_Rect for the x, y, w, and h of base texture
-	SDL_Rect baseRect;
+	SDL_Rect baseRect, sRect;
 
 	// barrel's SDL_Rect for the x, y, w, and h of barrel's texture
 	//SDL_Rect barrelRect;
 
 	// turret's SDL_Rect for the angle between the turret's position and the tank's position
-	float x, y, turretAngle;
+	float x, y, turretAngle, sAngle;
 
 	// point that will be used to rotate the turret - relative to the turret barrel's Rect
 	SDL_Point center;
@@ -61,6 +61,8 @@ public:
 
 	// audio sound effect - CHUNK
 	//Mix_Chunk *fire;
+
+
 
 	// turret's creation method using passed in values for renderer, player number, path to the texture
 	// starting pos x, starting pos y
@@ -73,7 +75,7 @@ public:
 	void Draw(SDL_Renderer *renderer);
 
 	// reset the turret
-	//void Reset();
+	void Reset();
 
 	// create a bullet
 	//void CreateBullet(SDL_Rect target);
@@ -83,6 +85,6 @@ public:
 	void TankMoveY(float tankSpeed, float deltaTime);
 
 	// float for the turret's position to avoid precision loss
-	float posB_X, posB_Y, posT_X, posT_Y;
+	float posB_X, posB_Y, posT_X, posT_Y, sPosX, sPosY;
 
 };

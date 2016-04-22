@@ -44,7 +44,7 @@ public:
 	SDL_Texture *tBarrel;
 
 	// Watcher's SDL_Rect for the x, y, w, and h of base texture
-	SDL_Rect baseRect;
+	SDL_Rect baseRect, sRect;
 
 	// barrel's SDL_Rect for the x, y, w, and h of barrel's texture
 	SDL_Rect barrelRect;
@@ -57,7 +57,10 @@ public:
 
 	// floats for the fireTime  and fireRate
 	float fireTime = 0.0f;
-	float fireRate = 1000.0f;
+	float fireRate = 1500.0f;
+
+	// bool to tell when the watcher has shot out a light
+	bool shot;
 
 	// audio sound effect - CHUNK
 	Mix_Chunk *fire;
@@ -83,6 +86,6 @@ public:
 	void TankMoveY(float tankSpeed, float deltaTime);
 
 	// float for the Watcher's position to avoid precision loss
-	float posB_X, posB_Y, posT_X, posT_Y;
+	float posB_X, posB_Y, posT_X, posT_Y, sPosX, sPosY;
 
 };

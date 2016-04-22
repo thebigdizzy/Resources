@@ -12,6 +12,8 @@ Watcher::Watcher(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	// create the Watcher base file path
 	string basePath = filePath + "watcherStand.png";
 
+	shot = false;
+
 	// load the image into the texture
 	tBase = IMG_LoadTexture(renderer, basePath.c_str());
 
@@ -24,6 +26,9 @@ Watcher::Watcher(SDL_Renderer *renderer, string filePath, string audioPath, floa
 	// set the SDL_Rect x and y for the base image
 	baseRect.x = x;
 	baseRect.y = y;
+
+	sRect.x = x;
+	sRect.y = y;
 
 	// use SDL_QueryTexture to get the w and h of the base's texture
 	int w, h;
@@ -66,6 +71,9 @@ Watcher::Watcher(SDL_Renderer *renderer, string filePath, string audioPath, floa
 
 	posT_X = barrelRect.x;
 	posT_Y = barrelRect.y;
+
+	sPosX = sRect.x;
+	sPosY = sRect.y;
 
 	WatcherAngle = 0;
 }
@@ -122,6 +130,18 @@ void Watcher::Draw(SDL_Renderer *renderer)
 	SDL_RenderCopyEx(renderer, tBarrel, NULL, &barrelRect, WatcherAngle, &center, SDL_FLIP_NONE);
 }
 
+void Watcher::Reset()
+{
+	baseRect.x = barrelRect.x = posB_X = posT_X = sRect.x;
+	baseRect.y = barrelRect.y = posB_Y = posT_Y = sRect.y;
+	shot = false;
+
+	for (int i = 0; i < lightList.size(); i++)
+	{
+		lightList[i].active = false;
+	}
+}
+
 // tank update method
 void Watcher::Update(float deltaTime, SDL_Rect tankRect)
 {
@@ -139,16 +159,17 @@ void Watcher::Update(float deltaTime, SDL_Rect tankRect)
 	}
 
 	if(lR)
-		WatcherAngle+= .1f;
+		WatcherAngle+= 100 * deltaTime;
 	else if(Rl)
-		WatcherAngle-= .1f;
+		WatcherAngle-= 100 * deltaTime;
 
-	cout << WatcherAngle << endl;
+	//cout << WatcherAngle << endl;
 
 	if(SDL_GetTicks() > fireTime)
 	{
 		if(baseRect.x > 0 && baseRect.x < 1024 && baseRect.y > 0 && baseRect.y < 768){
 			CreateBullet(tankRect);
+			///////////////////////////////////////////////////// make a bool so the watcher knows when he can shoot again. bool shot; ///////////////////////////////
 		}
 
 		fireTime = SDL_GetTicks() + (rand() % 3 + 1) * 3000;
@@ -161,7 +182,7 @@ void Watcher::Update(float deltaTime, SDL_Rect tankRect)
 			if(lightList[i].active)
 			{
 				// draw tthe bullet
-				lightList[i].Update(deltaTime, baseRect);
+				shot = lightList[i].Update(deltaTime, baseRect);
 			}
 		}
 }
@@ -173,9 +194,11 @@ void Watcher::CreateBullet(SDL_Rect target)
 	for (int i = 0; i < lightList.size(); i++)
 	{
 		// see if the bulelt is active
-		if(lightList[i].active == false)
+		if(lightList[i].active == false && !shot)
 		{
 			lightList[i].Start(WatcherAngle);
+
+			shot = true;
 
 			// player the over sound = plays fine through levels, must pause for Quit
 			//Mix_PlayChannel(-1, fire, 0);

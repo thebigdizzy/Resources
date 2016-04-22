@@ -61,7 +61,7 @@ void WatcherLight::Draw(SDL_Renderer *renderer)
 }
 
 // bullet update method
-void WatcherLight::Update(float deltaTime, SDL_Rect watcher)
+int WatcherLight::Update(float deltaTime, SDL_Rect watcher)
 {
 	turret.x = watcher.x;
 	turret.y = watcher.y;
@@ -113,6 +113,7 @@ void WatcherLight::Update(float deltaTime, SDL_Rect watcher)
 
 		if(SDL_HasIntersection(&turret, &posRect)){
 			Reset();
+			return 0;
 		}
 	}
 
@@ -121,7 +122,10 @@ void WatcherLight::Update(float deltaTime, SDL_Rect watcher)
 	if ((posRect.y < (0 - posRect.h)) || (posRect.y > 768) || (posRect.x < (0 - posRect.w)) || (posRect.x > 1024))
 	{
 		Reset();
+		return 0;
 	}
+
+	return 1;
 }
 
 // tank move the Watcher in X

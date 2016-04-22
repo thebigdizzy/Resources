@@ -29,14 +29,33 @@ using namespace std;
 
 class Tank{
 public:
+	// win condition
+	bool win1, win2;
+
+	// key collection
+	int key;
+
 	// textures for health bar
-	SDL_Texture *back, *mid, *front;
+	SDL_Texture *mid, *back, *front;
+
+	// textures for the GUIS turkeyleg and key
+	SDL_Texture *empty, *one, *two,
+		*none, *One, *Two, *Three;
+
+	// set up bool to lock in place;
+	bool lockX, lockY;
 
 	// rectangles for the health bar images
-	SDL_Rect backR, midR, frontR;
+	SDL_Rect midR, backR, frontR;
+
+	SDL_Rect emptyR, oneR, twoR;
+	SDL_Rect noneR, OneR, TwoR, ThreeR;
 
 	// number of rocks bibble has
 	int rocks;
+
+	// number of turkey legs Bibble has
+	int tLegNum;
 
 	// player health
 	float playerHealth, maxHealth;
@@ -84,6 +103,14 @@ public:
 	void OnControllerAxis(Sint16 X, Sint16 Y);
 
 	void OnControllerButton(const SDL_ControllerButtonEvent event);
+
+	int lightCollision(SDL_Rect light);
+
+	int turkeyCollision(SDL_Rect tLegRect);
+
+	int rockCollision(SDL_Rect rockRect);
+
+	int keyCollision(SDL_Rect keyRect);
 
 	void Update (float deltaTime);
 
