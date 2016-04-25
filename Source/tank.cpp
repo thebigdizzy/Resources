@@ -1,7 +1,32 @@
 #include "tank.h"
+#include "rockHit.h"
 
 // analog joystick dead zone
 const int JOYSTICK_DEAD_ZONE = 8000;
+
+vector<RockHit> rockHitList;
+
+void rockHits(int x, int y)
+{
+	// see if there is an explosion not active to use
+	for (int i = 0; i < rockHitList.size(); i++)
+	{
+		// see if the explosion is not active
+		if (rockHitList[i].active == false)
+		{
+			// set explosion to active
+			rockHitList[i].active = true;
+
+			// use some math in the x position to get the bullet close to
+			// the center of the player using player width
+			rockHitList[i].posRect.x = x;
+			rockHitList[i].posRect.y = y;
+
+			// once explosion is found, break out of loop
+			break;
+		}
+	}
+}
 
 // tank creation
 Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, float x, float y)
@@ -19,6 +44,10 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 	One = IMG_LoadTexture(renderer, (filePath + "tLegOneGUI.png").c_str());
 	Two = IMG_LoadTexture(renderer, (filePath + "tLegTwoGUI.png").c_str());
 	Three = IMG_LoadTexture(renderer, (filePath + "tLegThreeGUI.png").c_str());
+
+	// bring in the rock landing sound
+	// sound effect for the rock hit
+	//rockLand = Mix_LoadWAV((audioPath + "rockClatter.wav").c_str());
 
 	// set win condition to false
 	win1 = false;
@@ -104,6 +133,26 @@ Tank::Tank(SDL_Renderer *renderer, int pNum, string filePath, string audioPath, 
 
 	lockX = false;
 	lockY = false;
+
+	// create a pool of explosions - 10
+	for (int i = 0; i < 10; i++) {
+		// create the enemy
+		RockHit tmpExplode(renderer, filePath, -1000, -1000, 0);
+
+		// add to the enemyList
+		rockHitList.push_back(tmpExplode);
+	}
+
+	// create the rects for the rock ammo indicators
+	oneRock.w = twoRock.w = threeRock.w = 80;
+	oneRock.h = twoRock.h = threeRock.h = 80;
+
+	oneRock.x = 10;
+	twoRock.x = 90;
+	threeRock.x = 170;
+
+	oneRock.y = twoRock.y = threeRock.y = 700;
+
 }
 
 void Tank::eTankHit()
@@ -136,13 +185,32 @@ void Tank::Update(float deltaTime)
 		win2 = false;
 	}
 
+	// set the rock hit explosion here
+	for (int i = 0; i < bulletList.size(); i++)
+	{
+		int x = bulletList[i].posRect.x - (bulletList[i].posRect.w + 10);
+		int y = bulletList[i].posRect.y - (bulletList[i].posRect.h + 10);
+
+		if (bulletList[i].explode && bulletList[i].stop) {
+			rockHits(x, y);
+			bulletList[i].explode = false;
+			//Mix_PlayChannel(-1, rockLand, 0);
+		}
+	}
+
 	// update the player's health
 	playerHealth -= .5 * deltaTime;
 
 	// update the player's health GUI
 	midR.w = playerHealth / maxHealth * 300;
 
-
+	// update the explosions if they are active
+	for (int i = 0; i < rockHitList.size(); i++)
+	{
+		if (rockHitList[i].active) {
+			rockHitList[i].Update(deltaTime);
+		}
+	}
 
 	// check for gamepad input
 	if(Xvalue != 0 || Yvalue != 0)
@@ -220,7 +288,7 @@ void Tank::Update(float deltaTime)
 			}
 		}
 
-		// update the rocks
+		// pickup the rocks
 		for (int i = 0; i < bulletList.size(); i++)
 		{
 			if (bulletList[i].active && bulletList[i].stop) {
@@ -237,6 +305,39 @@ void Tank::Update(float deltaTime)
 void Tank::Draw(SDL_Renderer *renderer)
 {
 	SDL_RenderCopyEx(renderer, texture, NULL, &posRect, tankAngle, &center, SDL_FLIP_NONE);
+
+	// draw the rock GUIs
+	if (rocks == 1) {
+		SDL_RenderCopy(renderer, bulletList[9].texture, NULL, &oneRock);
+	}
+	else if (rocks == 2) {
+		SDL_RenderCopy(renderer, bulletList[9].texture, NULL, &oneRock);
+		SDL_RenderCopy(renderer, bulletList[9].texture, NULL, &twoRock);
+	}
+	else if (rocks >= 3) {
+		rocks = 3;
+		SDL_RenderCopy(renderer, bulletList[9].texture, NULL, &oneRock);
+		SDL_RenderCopy(renderer, bulletList[9].texture, NULL, &twoRock);
+		SDL_RenderCopy(renderer, bulletList[9].texture, NULL, &threeRock);
+	}
+
+	// draw the explosions if they are active
+	for (int i = 0; i < rockHitList.size(); i++)
+	{
+		if (rockHitList[i].active) {
+			rockHitList[i].Draw(renderer);
+		}
+	}
+
+	// draw the player's bullets
+	for (int i = 0; i < bulletList.size(); i++)
+	{
+		// check to see if the bullet is active
+		if (bulletList[i].active) {
+			// draw the bullet
+			bulletList[i].Draw(renderer);
+		}
+	}
 
 	// draw the health bar
 	SDL_RenderCopy(renderer, back, NULL, &backR);
@@ -273,17 +374,6 @@ void Tank::Draw(SDL_Renderer *renderer)
 	else {
 		SDL_RenderCopy(renderer, none, NULL, &noneR);
 	}
-
-	// draw the player's bullets
-	for (int i = 0; i < bulletList.size(); i++)
-	{
-		// check to see if the bullet is active
-		if(bulletList[i].active){
-			// draw the bullet
-			bulletList[i].Draw(renderer);
-		}
-	}
-
 }
 
 void Tank::Reset()
@@ -300,6 +390,11 @@ void Tank::Reset()
 	win1 = false;
 	win2 = false;
 	playerHealth = 100;
+
+	for (int i = 0; i < bulletList.size(); i++)
+	{
+		bulletList[i].active = false;
+	}
 }
 
 void Tank::OnControllerButton(const SDL_ControllerButtonEvent event)

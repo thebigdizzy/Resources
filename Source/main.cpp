@@ -39,6 +39,7 @@
 #include "rockPickUp.h"
 #include "safePlace.h"
 #include "key.h"
+#include "rockHit.h"
 using namespace std;
 
 // CODE FOR FRAME RATE INDEPENDENCE
@@ -285,6 +286,8 @@ int main(int argc, char* argv[]) {
 
 	// create the renderer
 	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+
+	
 
 	//********** Create Background **********
 	string BKGD1path = s_cwd_images + "MainMenu1.png";
@@ -1153,6 +1156,20 @@ int main(int argc, char* argv[]) {
 	Building building7 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 2);
 	Building building8 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 2);
 
+	// middle buildings
+	Building building9 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 425, 3);
+	Building building10 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 425, 3);
+	Building building11 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 870, 3);
+	Building building12 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 870, 3);
+
+	// bottom buildings
+	Building building13 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 1315, 4);
+	Building building14 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 1315, 4);
+
+	// top buildings
+	Building building15 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 5);
+	Building building16 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 5);
+
 	// Safe Place
 	Safe safePlace = Safe(renderer, s_cwd_images.c_str(), 1750, 1300);
 
@@ -1219,6 +1236,17 @@ int main(int argc, char* argv[]) {
 	Mix_Chunk *pressSound = Mix_LoadWAV((audio_dir + "press.wav").c_str());
 
 	Mix_Chunk *overSound = Mix_LoadWAV((audio_dir + "over.wav").c_str());
+
+	// rock landing audio
+	// sound effect for the rock hit
+	Mix_Chunk *rockLand = Mix_LoadWAV((audio_dir + "rockClatter.wav").c_str());
+	Mix_Chunk *rockHit = Mix_LoadWAV((audio_dir + "Ugh.wav").c_str());
+
+	// drumstick pickup
+	Mix_Chunk *chomp = Mix_LoadWAV((audio_dir + "chomp.wav").c_str());
+
+	// key pickup
+	Mix_Chunk *keys = Mix_LoadWAV((audio_dir + "clink.wav").c_str());
 
 	//Mix_Chunk *explosionSound = Mix_LoadWAV((audio_dir + "explosion.wav").c_str());
 
@@ -1693,6 +1721,81 @@ int main(int argc, char* argv[]) {
 				// pass to player 1
 				bibble.OnControllerAxis(Xvalue, Yvalue);
 
+				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
+				{
+					bibble.speed = 10;
+				}
+				else {
+					bibble.speed = 100;
+				}
+
+				// tagging the Copper and rock as hit
+				for (int i = 0; i < bibble.bulletList.size(); i++) {
+					if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop1.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop2.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop3.cAnim[0].posRect) ||
+						SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop4.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect))
+					{
+						if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop1.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop1.active = false;
+							cop1.cAnim[0].posRect.x = -3000;
+							cop1.posT_X = -3000;
+							cop1.lPosX = -3000;
+							cop1.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop2.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop2.active = false;
+							cop2.cAnim[0].posRect.x = -3000;
+							cop2.posT_X = -3000;
+							cop2.lPosX = -3000;
+							cop2.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop3.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop3.active = false;
+							cop3.cAnim[0].posRect.x = -3000;
+							cop3.posT_X = -3000;
+							cop3.lPosX = -3000;
+							cop3.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop4.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop4.active = false;
+							cop4.cAnim[0].posRect.x = -3000;
+							cop4.posT_X = -3000;
+							cop4.lPosX = -3000;
+							cop4.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) && !bibble.bulletList[i].stop) {
+							watcher1.active = false;
+							watcher1.barrelRect.x = -3000;
+							//watcher1.posT_X = -3000;
+							watcher1.posB_X = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect) && !bibble.bulletList[i].stop) {
+							watcher2.active = false;
+							watcher2.barrelRect.x = -3000;
+							//watcher2.posT_X = -3000;
+							watcher2.posB_X = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+					}
+				}
+
+				for (int i = 0; i < bibble.bulletList.size(); i++) {
+					if (bibble.bulletList[i].explode && !bibble.bulletList[i].hit) {
+						Mix_PlayChannel(-1, rockLand, 0);
+					}
+					else if (bibble.bulletList[i].explode && bibble.bulletList[i].hit) {
+						Mix_PlayChannel(-1, rockHit, 0);
+						bibble.bulletList[i].hit = false;
+					}
+				}
+
+
 				// update the player
 				bibble.Update(deltaTime);
 
@@ -1910,15 +2013,7 @@ int main(int argc, char* argv[]) {
 					}
 				}
 
-				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
-				{
-					bibble.speed = 10;
-				}
-				else {
-					bibble.speed = 100;
-				}
+				
 
 				// Start Drawing
 				// Clear SDL renderer
@@ -1997,6 +2092,7 @@ int main(int argc, char* argv[]) {
 					if (bibble.turkeyCollision(tLeg[i].tLegRect)) {
 						tLeg[i].tLegRect.x = tLeg[i].posJ_X = -3000;
 						tLeg[i].active = false;
+						Mix_PlayChannel(-1, chomp, 0);
 					}
 				}
 
@@ -2005,6 +2101,7 @@ int main(int argc, char* argv[]) {
 					key1.keyRect.x = -3000;
 					key1.active = false;
 					key1.posJ_X = -3000;
+					Mix_PlayChannel(-1, keys, 0);
 				}
 
 				for (int i = 0; i < rock.size(); i++) {
@@ -2069,14 +2166,14 @@ int main(int argc, char* argv[]) {
 			cop4.reset();
 
 			// reset all of the buildings
-			building1.Reset();
-			building2.Reset();
-			building3.Reset();
-			building4.Reset();
-			building5.Reset();
-			building6.Reset();
-			building7.Reset();
-			building8.Reset();
+			building9.Reset();
+			building10.Reset();
+			building11.Reset();
+			building12.Reset();
+			building13.Reset();
+			building14.Reset();
+			building15.Reset();
+			building16.Reset();
 
 			// reset the key for the second level
 			key2.Reset();
@@ -2132,6 +2229,81 @@ int main(int argc, char* argv[]) {
 				// pass to player 1
 				bibble.OnControllerAxis(Xvalue, Yvalue);
 
+				if (SDL_HasIntersection(&bibble.posRect, &building9.baseRect) || SDL_HasIntersection(&bibble.posRect, &building10.baseRect) || SDL_HasIntersection(&bibble.posRect, &building11.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building12.baseRect) || SDL_HasIntersection(&bibble.posRect, &building13.baseRect) || SDL_HasIntersection(&bibble.posRect, &building14.baseRect) ||
+					SDL_HasIntersection(&bibble.posRect, &building15.baseRect) || SDL_HasIntersection(&bibble.posRect, &building16.baseRect))
+				{
+					bibble.speed = 10;
+				}
+				else {
+					bibble.speed = 100;
+				}
+
+				// tagging the Copper and rock as hit
+				for (int i = 0; i < bibble.bulletList.size(); i++) {
+					if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop1.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop2.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop3.cAnim[0].posRect) ||
+						SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop4.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect))
+					{
+						if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop1.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop1.active = false;
+							cop1.cAnim[0].posRect.x = -3000;
+							cop1.posT_X = -3000;
+							cop1.lPosX = -3000;
+							cop1.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop2.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop2.active = false;
+							cop2.cAnim[0].posRect.x = -3000;
+							cop2.posT_X = -3000;
+							cop2.lPosX = -3000;
+							cop2.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop3.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop3.active = false;
+							cop3.cAnim[0].posRect.x = -3000;
+							cop3.posT_X = -3000;
+							cop3.lPosX = -3000;
+							cop3.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop4.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop4.active = false;
+							cop4.cAnim[0].posRect.x = -3000;
+							cop4.posT_X = -3000;
+							cop4.lPosX = -3000;
+							cop4.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) && !bibble.bulletList[i].stop) {
+							watcher1.active = false;
+							watcher1.barrelRect.x = -3000;
+							//watcher1.posT_X = -3000;
+							watcher1.posB_X = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect) && !bibble.bulletList[i].stop) {
+							watcher2.active = false;
+							watcher2.barrelRect.x = -3000;
+							//watcher2.posT_X = -3000;
+							watcher2.posB_X = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+					}
+				}
+
+				for (int i = 0; i < bibble.bulletList.size(); i++) {
+					if (bibble.bulletList[i].explode && !bibble.bulletList[i].hit) {
+						Mix_PlayChannel(-1, rockLand, 0);
+					}
+					else if (bibble.bulletList[i].explode && bibble.bulletList[i].hit) {
+						Mix_PlayChannel(-1, rockHit, 0);
+						bibble.bulletList[i].hit = false;
+					}
+				}
+
+
 				// update the player
 				bibble.Update(deltaTime);
 
@@ -2158,16 +2330,14 @@ int main(int argc, char* argv[]) {
 						bkgdRect.x = (int)(X_pos + .5f);
 
 						// move the buildings
-						building1.TankMoveX(-bibble.speed, deltaTime);
-						building2.TankMoveX(-bibble.speed, deltaTime);
-						building3.TankMoveX(-bibble.speed, deltaTime);
-						building4.TankMoveX(-bibble.speed, deltaTime);
-						building5.TankMoveX(-bibble.speed, deltaTime);
-						building6.TankMoveX(-bibble.speed, deltaTime);
-						building7.TankMoveX(-bibble.speed, deltaTime);
-						building8.TankMoveX(-bibble.speed, deltaTime);
-
-						key2.TankMoveX(-bibble.speed, deltaTime);
+						building9.TankMoveX(-bibble.speed, deltaTime);
+						building10.TankMoveX(-bibble.speed, deltaTime);
+						building11.TankMoveX(-bibble.speed, deltaTime);
+						building12.TankMoveX(-bibble.speed, deltaTime);
+						building13.TankMoveX(-bibble.speed, deltaTime);
+						building14.TankMoveX(-bibble.speed, deltaTime);
+						building15.TankMoveX(-bibble.speed, deltaTime);
+						building16.TankMoveX(-bibble.speed, deltaTime);
 
 						safePlace.TankMoveX(-bibble.speed, deltaTime);
 
@@ -2183,6 +2353,8 @@ int main(int argc, char* argv[]) {
 							tLeg[i].TankMoveX(-bibble.speed, deltaTime);
 							rock[i].TankMoveX(-bibble.speed, deltaTime);
 						}
+
+						key2.TankMoveX(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -2209,16 +2381,14 @@ int main(int argc, char* argv[]) {
 						bkgdRect.x = (int)(X_pos + 0.5f);
 
 						// move the buildings
-						building1.TankMoveX(bibble.speed, deltaTime);
-						building2.TankMoveX(bibble.speed, deltaTime);
-						building3.TankMoveX(bibble.speed, deltaTime);
-						building4.TankMoveX(bibble.speed, deltaTime);
-						building5.TankMoveX(bibble.speed, deltaTime);
-						building6.TankMoveX(bibble.speed, deltaTime);
-						building7.TankMoveX(bibble.speed, deltaTime);
-						building8.TankMoveX(bibble.speed, deltaTime);
-
-						key2.TankMoveX(bibble.speed, deltaTime);
+						building9.TankMoveX(bibble.speed, deltaTime);
+						building10.TankMoveX(bibble.speed, deltaTime);
+						building11.TankMoveX(bibble.speed, deltaTime);
+						building12.TankMoveX(bibble.speed, deltaTime);
+						building13.TankMoveX(bibble.speed, deltaTime);
+						building14.TankMoveX(bibble.speed, deltaTime);
+						building15.TankMoveX(bibble.speed, deltaTime);
+						building16.TankMoveX(bibble.speed, deltaTime);
 
 						safePlace.TankMoveX(bibble.speed, deltaTime);
 
@@ -2234,6 +2404,8 @@ int main(int argc, char* argv[]) {
 							tLeg[i].TankMoveX(bibble.speed, deltaTime);
 							rock[i].TankMoveX(bibble.speed, deltaTime);
 						}
+
+						key2.TankMoveX(bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -2260,16 +2432,14 @@ int main(int argc, char* argv[]) {
 						bkgdRect.y = (int)(Y_pos + .5f);
 
 						// move the buildings
-						building1.TankMoveY(-bibble.speed, deltaTime);
-						building2.TankMoveY(-bibble.speed, deltaTime);
-						building3.TankMoveY(-bibble.speed, deltaTime);
-						building4.TankMoveY(-bibble.speed, deltaTime);
-						building5.TankMoveY(-bibble.speed, deltaTime);
-						building6.TankMoveY(-bibble.speed, deltaTime);
-						building7.TankMoveY(-bibble.speed, deltaTime);
-						building8.TankMoveY(-bibble.speed, deltaTime);
-
-						key2.TankMoveY(-bibble.speed, deltaTime);
+						building9.TankMoveY(-bibble.speed, deltaTime);
+						building10.TankMoveY(-bibble.speed, deltaTime);
+						building11.TankMoveY(-bibble.speed, deltaTime);
+						building12.TankMoveY(-bibble.speed, deltaTime);
+						building13.TankMoveY(-bibble.speed, deltaTime);
+						building14.TankMoveY(-bibble.speed, deltaTime);
+						building15.TankMoveY(-bibble.speed, deltaTime);
+						building16.TankMoveY(-bibble.speed, deltaTime);
 
 						safePlace.TankMoveY(-bibble.speed, deltaTime);
 
@@ -2285,6 +2455,8 @@ int main(int argc, char* argv[]) {
 							tLeg[i].TankMoveY(-bibble.speed, deltaTime);
 							rock[i].TankMoveY(-bibble.speed, deltaTime);
 						}
+
+						key2.TankMoveY(-bibble.speed, deltaTime);
 
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
@@ -2309,16 +2481,14 @@ int main(int argc, char* argv[]) {
 						bkgdRect.y = (int)(Y_pos + 0.5f);
 
 						// move the buildings
-						building1.TankMoveY(bibble.speed, deltaTime);
-						building2.TankMoveY(bibble.speed, deltaTime);
-						building3.TankMoveY(bibble.speed, deltaTime);
-						building4.TankMoveY(bibble.speed, deltaTime);
-						building5.TankMoveY(bibble.speed, deltaTime);
-						building6.TankMoveY(bibble.speed, deltaTime);
-						building7.TankMoveY(bibble.speed, deltaTime);
-						building8.TankMoveY(bibble.speed, deltaTime);
-
-						key2.TankMoveY(bibble.speed, deltaTime);
+						building9.TankMoveY(bibble.speed, deltaTime);
+						building10.TankMoveY(bibble.speed, deltaTime);
+						building11.TankMoveY(bibble.speed, deltaTime);
+						building12.TankMoveY(bibble.speed, deltaTime);
+						building13.TankMoveY(bibble.speed, deltaTime);
+						building14.TankMoveY(bibble.speed, deltaTime);
+						building15.TankMoveY(bibble.speed, deltaTime);
+						building16.TankMoveY(bibble.speed, deltaTime);
 
 						safePlace.TankMoveY(bibble.speed, deltaTime);
 
@@ -2335,6 +2505,8 @@ int main(int argc, char* argv[]) {
 							rock[i].TankMoveY(bibble.speed, deltaTime);
 						}
 
+						key2.TankMoveY(bibble.speed, deltaTime);
+
 						for (int i = 0; i < bibble.bulletList.size(); i++)
 						{
 							if (bibble.bulletList[i].active)
@@ -2347,16 +2519,6 @@ int main(int argc, char* argv[]) {
 					else {
 						Y_pos = bkgdRect.y;
 					}
-				}
-
-				if (SDL_HasIntersection(&bibble.posRect, &building1.baseRect) || SDL_HasIntersection(&bibble.posRect, &building2.baseRect) || SDL_HasIntersection(&bibble.posRect, &building3.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building4.baseRect) || SDL_HasIntersection(&bibble.posRect, &building5.baseRect) || SDL_HasIntersection(&bibble.posRect, &building6.baseRect) ||
-						SDL_HasIntersection(&bibble.posRect, &building7.baseRect) || SDL_HasIntersection(&bibble.posRect, &building8.baseRect))
-				{
-					bibble.speed = 10;
-				}
-				else {
-					bibble.speed = 100;
 				}
 
 				// Start Drawing
@@ -2376,16 +2538,14 @@ int main(int argc, char* argv[]) {
 				watcher1.Draw(renderer);
 				watcher2.Draw(renderer);
 
-				building1.Draw(renderer);
-				building2.Draw(renderer);
-				building3.Draw(renderer);
-				building4.Draw(renderer);
-				building5.Draw(renderer);
-				building6.Draw(renderer);
-				building7.Draw(renderer);
-				building8.Draw(renderer);
-
-				key2.Draw(renderer);
+				building9.Draw(renderer);
+				building10.Draw(renderer);
+				building11.Draw(renderer);
+				building12.Draw(renderer);
+				building13.Draw(renderer);
+				building14.Draw(renderer);
+				building15.Draw(renderer);
+				building16.Draw(renderer);
 
 				// draw bibble
 				bibble.Draw(renderer);
@@ -2397,8 +2557,20 @@ int main(int argc, char* argv[]) {
 					rock[i].Draw(renderer);
 				}
 
+				key2.Draw(renderer);
+
 				// SDL Render present
 				SDL_RenderPresent(renderer);
+
+				// check the player's health
+				// if it's below zero, then go to lose scene
+				// else continue
+				if (bibble.playerHealth <= 0)
+				{
+					level2 = false;
+					gameState = LOSE;
+					break;
+				}
 
 				if (SDL_HasIntersection(&bibble.posRect, &safePlace.safeRect)) {
 					if (bibble.win2) {
@@ -2408,23 +2580,12 @@ int main(int argc, char* argv[]) {
 						break;
 					}
 					else {
-						// display what the player has to do to get in
+						// display what is needed to get in
 					}
 				}
 
-				// check the player's health
-				// if it's below zero, then go to lose scene
-				// else continue
-				if(bibble.playerHealth <= 0)
-				{
-					level1 = false;
-					gameState = LOSE;
-					break;
-				}
-
 				// check for collisions between bibble and the lights
-				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) ||
-						cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center))
+				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) || cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center))
 				{
 					SDL_Delay(3000);
 					level2 = false;
@@ -2437,7 +2598,16 @@ int main(int argc, char* argv[]) {
 					if (bibble.turkeyCollision(tLeg[i].tLegRect)) {
 						tLeg[i].tLegRect.x = tLeg[i].posJ_X = -3000;
 						tLeg[i].active = false;
+						Mix_PlayChannel(-1, chomp, 0);
 					}
+				}
+
+				if (bibble.keyCollision(key2.keyRect))
+				{
+					key2.keyRect.x = -3000;
+					key2.active = false;
+					key2.posJ_X = -3000;
+					Mix_PlayChannel(-1, keys, 0);
 				}
 
 				for (int i = 0; i < rock.size(); i++) {
@@ -2445,12 +2615,6 @@ int main(int argc, char* argv[]) {
 						rock[i].rockRect.x = rock[i].posJ_X = -3000;
 						rock[i].active = false;
 					}
-				}
-
-				if (bibble.keyCollision(key2.keyRect)) {
-					key2.keyRect.x = -3000;
-					key2.active = false;
-					key2.posJ_X = -3000;
 				}
 
 				// light collision check for watcher 1

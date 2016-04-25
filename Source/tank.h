@@ -50,6 +50,10 @@ public:
 
 	SDL_Rect emptyR, oneR, twoR;
 	SDL_Rect noneR, OneR, TwoR, ThreeR;
+	SDL_Rect oneRock, twoRock, threeRock;
+
+	// sound effect for the rock hit
+	Mix_Chunk *rockLand;
 
 	// number of rocks bibble has
 	int rocks;

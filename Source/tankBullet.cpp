@@ -12,6 +12,11 @@ Rocks::Rocks(SDL_Renderer *renderer, string filePath, float x, float y, int dirX
 	// set stop to false
 	stop = false;
 
+	hit = false;
+
+	// set explode bool to false
+	explode = false;
+
 	// create the texture from the passed renderer and created surface
 	texture = IMG_LoadTexture(renderer, filePath.c_str());
 
@@ -48,6 +53,8 @@ void Rocks::Reset()
 	// deactivate the bullet
 	active = false;
 	stop = false;
+	explode = false;
+	hit = false;
 }
 
 // bullet draw method
@@ -78,10 +85,11 @@ void Rocks::Update(float deltaTime)
 
 	distance = Distance(sX, sY, pos_X, pos_Y);
 
-	if (distance > 300 && !stop) {
+	if (distance > 300 && !stop || hit) {
 		stop = true;
 		posB_X = posRect.x;
 		posB_Y = posRect.y;
+		explode = true;
 	}
 
 	// check to see if the bullet is off the top of the screen

@@ -218,6 +218,8 @@ void Copper::Reset()
 
 void Copper::reset()
 {
+	active = true;
+
 	cAnim[0].posRect.x = sRect.x;
 	cAnim[0].posRect.y = sRect.y;
 

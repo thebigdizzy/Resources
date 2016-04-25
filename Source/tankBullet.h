@@ -23,6 +23,8 @@ public:
 	bool active;
 
 	bool stop;
+	bool explode;
+	bool hit;
 
 	// bullet texture
 	SDL_Texture *texture;
