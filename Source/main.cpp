@@ -1170,6 +1170,10 @@ int main(int argc, char* argv[]) {
 	Building building15 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 5);
 	Building building16 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 5);
 
+	// right buildings
+	Building building17 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 6);
+	Building building18 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 6);
+
 	// Safe Place
 	Safe safePlace = Safe(renderer, s_cwd_images.c_str(), 1750, 1300);
 
@@ -1771,14 +1775,16 @@ int main(int argc, char* argv[]) {
 						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) && !bibble.bulletList[i].stop) {
 							watcher1.active = false;
 							watcher1.barrelRect.x = -3000;
-							//watcher1.posT_X = -3000;
+							watcher1.baseRect.x = -3000;
+							watcher1.posT_X = -3000;
 							watcher1.posB_X = -3000;
 							bibble.bulletList[i].hit = true;
 						}
 						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect) && !bibble.bulletList[i].stop) {
 							watcher2.active = false;
 							watcher2.barrelRect.x = -3000;
-							//watcher2.posT_X = -3000;
+							watcher2.baseRect.x = -3000;
+							watcher2.posT_X = -3000;
 							watcher2.posB_X = -3000;
 							bibble.bulletList[i].hit = true;
 						}
@@ -2279,14 +2285,16 @@ int main(int argc, char* argv[]) {
 						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) && !bibble.bulletList[i].stop) {
 							watcher1.active = false;
 							watcher1.barrelRect.x = -3000;
-							//watcher1.posT_X = -3000;
+							watcher1.baseRect.x = -3000;
+							watcher1.posT_X = -3000;
 							watcher1.posB_X = -3000;
 							bibble.bulletList[i].hit = true;
 						}
 						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect) && !bibble.bulletList[i].stop) {
 							watcher2.active = false;
 							watcher2.barrelRect.x = -3000;
-							//watcher2.posT_X = -3000;
+							watcher2.baseRect.x = -3000;
+							watcher2.posT_X = -3000;
 							watcher2.posB_X = -3000;
 							bibble.bulletList[i].hit = true;
 						}

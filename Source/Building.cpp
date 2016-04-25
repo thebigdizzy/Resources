@@ -21,7 +21,11 @@ Building::Building(SDL_Renderer *renderer, string filePath, string audioPath, fl
 		basePath = filePath + "building2Bot.png";
 	} else if (id == 5) {
 		basePath = filePath + "building2Top.png";
-	} else {
+	} else if (id == 6) {
+		basePath = filePath + "building2Right.png";
+	}else if (id == 7) {
+		basePath = filePath + "building2Left.png";
+	}else {
 		basePath = filePath + "building1.png";
 	}
 

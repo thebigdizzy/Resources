@@ -62,8 +62,6 @@ public:
 	// audio sound effect - CHUNK
 	//Mix_Chunk *fire;
 
-
-
 	// turret's creation method using passed in values for renderer, player number, path to the texture
 	// starting pos x, starting pos y
 	Building(SDL_Renderer *renderer, string filrPath, string audioPath, float x, float y, int id);
