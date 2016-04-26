@@ -172,6 +172,72 @@ void Copper::Update(float deltaTime, SDL_Rect CopperRect)
 				move_x = -speed;
 			}
 		}
+		else if (idNum == 2) {
+			if (posY < sPosY - 500) {
+				up = true;
+				dn = false;
+				turn = true;
+			}
+			else if (posY > sPosY) {
+				dn = true;
+				up = false;
+				turn = true;
+			}
+
+			if (up && turn && !dn) {
+				CopperAngle -= .1f;
+			}
+			else if (dn && turn && !up) {
+				CopperAngle += .1f;
+			}
+
+			if (CopperAngle <= 90)
+				turn = false;
+			else if (CopperAngle >= 270)
+				turn = false;
+
+			if (up && !turn) {
+				CopperAngle = 90;
+				move_y = speed;
+			}
+			else if (dn && !turn) {
+				CopperAngle = 270;
+				move_y = -speed;
+			}
+		}
+		else if (idNum == 3) {
+			if (posY < sPosY - 500) {
+				up = true;
+				dn = false;
+				turn = true;
+			}
+			else if (posY > sPosY) {
+				dn = true;
+				up = false;
+				turn = true;
+			}
+
+			if (up && turn && !dn) {
+				CopperAngle -= .1f;
+			}
+			else if (dn && turn && !up) {
+				CopperAngle += .1f;
+			}
+
+			if (CopperAngle <= 90)
+				turn = false;
+			else if (CopperAngle >= 270)
+				turn = false;
+
+			if (up && !turn) {
+				CopperAngle = 90;
+				move_y = speed;
+			}
+			else if (dn && !turn) {
+				CopperAngle = 270;
+				move_y = -speed;
+			}
+		}
 
 		//lPosX = center.x * cos(((CopperAngle)* M_PI) / 180);
 		//lPosY = center.y * sin(((CopperAngle)* M_PI) / 180);
@@ -263,10 +329,23 @@ int Copper::checkCollision(SDL_Rect target, SDL_Point point)
 	object.x = (difference.x * cos(-CopperAngle * M_PI / 180)) - (difference.y * sin(-CopperAngle * M_PI / 180));
 	object.y = (difference.x * sin(-CopperAngle * M_PI / 180)) + (difference.y * cos(-CopperAngle * M_PI / 180));
 
-	if (object.x - 50 < r + (fLightRect.w) && object.x > 0 && object.y < (fLightRect.h / 2) && object.y >  (-fLightRect.h / 2)) {
+	/*if (object.x - 50 < r + (fLightRect.w) && object.x > 0 && object.y < (fLightRect.h / 2) && object.y >  (-fLightRect.h / 2)) {
 		if (object.x  - 50 < r + (fLightRect.w) && lt || object.x < r + (fLightRect.w) && rt) {
 			return 1;
 		}
+	}*/
+
+	if (object.x < fLightRect.w && object.x > 0 && object.y < 50 && object.y > -50 && rt) {
+		return 1;
+	}
+	if (object.x < fLightRect.w + 30 && object.x > 0 && object.y < 30 && object.y > -70 && lt) {
+		return 1;
+	}
+	if (object.x < fLightRect.w + 10 && object.x > 0 && object.y < 10 && object.y > -110 && dn) {
+		return 1;
+	}
+	if (object.x < fLightRect.w + 60 && object.x > 0 && object.y < 110 && object.y > -10 && up && !turn) {
+		return 1;
 	}
 
 	return 0;

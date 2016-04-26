@@ -1137,6 +1137,8 @@ int main(int argc, char* argv[]) {
 	Copper cop2 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1600.0f, 220.0f, 1);
 	Copper cop3 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 370.0f, 795, 0);
 	Copper cop4 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1600.0f, 665, 1);
+	Copper cop5 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 300, 1000, 2);
+	Copper cop6 = Copper(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1700, 1000, 3);
 
 	// create the watcher coppers
 	Watcher watcher1 = Watcher(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 650, 1250);
@@ -1171,15 +1173,19 @@ int main(int argc, char* argv[]) {
 	Building building16 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 5);
 
 	// right buildings
-	Building building17 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 375, 100, 6);
-	Building building18 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1120, 100, 6);
+	Building building17 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1840, 175, 6);
+	Building building18 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 1840, 805, 6);
+
+	// right buildings
+	Building building19 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 100, 175, 7);
+	Building building20 = Building(renderer, s_cwd_images.c_str(), audio_dir.c_str(), 100, 805, 7);
 
 	// Safe Place
 	Safe safePlace = Safe(renderer, s_cwd_images.c_str(), 1750, 1300);
 
 	// key pickup
 	Key key1 = Key(renderer, s_cwd_images.c_str(), 1000, 900);
-	Key key2 = Key(renderer, s_cwd_images.c_str(), 1000, 160);
+	Key key2 = Key(renderer, s_cwd_images.c_str(), 1000, 1350);
 
 	// make turkey leg pickups
 
@@ -2170,6 +2176,8 @@ int main(int argc, char* argv[]) {
 			cop2.reset();
 			cop3.reset();
 			cop4.reset();
+			cop5.reset();
+			cop6.reset();
 
 			// reset all of the buildings
 			building9.Reset();
@@ -2180,6 +2188,10 @@ int main(int argc, char* argv[]) {
 			building14.Reset();
 			building15.Reset();
 			building16.Reset();
+			building17.Reset();
+			building18.Reset();
+			building19.Reset();
+			building20.Reset();
 
 			// reset the key for the second level
 			key2.Reset();
@@ -2237,7 +2249,8 @@ int main(int argc, char* argv[]) {
 
 				if (SDL_HasIntersection(&bibble.posRect, &building9.baseRect) || SDL_HasIntersection(&bibble.posRect, &building10.baseRect) || SDL_HasIntersection(&bibble.posRect, &building11.baseRect) ||
 					SDL_HasIntersection(&bibble.posRect, &building12.baseRect) || SDL_HasIntersection(&bibble.posRect, &building13.baseRect) || SDL_HasIntersection(&bibble.posRect, &building14.baseRect) ||
-					SDL_HasIntersection(&bibble.posRect, &building15.baseRect) || SDL_HasIntersection(&bibble.posRect, &building16.baseRect))
+					SDL_HasIntersection(&bibble.posRect, &building15.baseRect) || SDL_HasIntersection(&bibble.posRect, &building16.baseRect) || SDL_HasIntersection(&bibble.posRect, &building17.baseRect) || 
+					SDL_HasIntersection(&bibble.posRect, &building18.baseRect) || SDL_HasIntersection(&bibble.posRect, &building19.baseRect) ||	SDL_HasIntersection(&bibble.posRect, &building20.baseRect))
 				{
 					bibble.speed = 10;
 				}
@@ -2248,7 +2261,8 @@ int main(int argc, char* argv[]) {
 				// tagging the Copper and rock as hit
 				for (int i = 0; i < bibble.bulletList.size(); i++) {
 					if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop1.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop2.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop3.cAnim[0].posRect) ||
-						SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop4.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect))
+						SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop4.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher2.barrelRect) ||
+						SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop5.cAnim[0].posRect) || SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop6.cAnim[0].posRect))
 					{
 						if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop1.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
 							cop1.active = false;
@@ -2280,6 +2294,22 @@ int main(int argc, char* argv[]) {
 							cop4.posT_X = -3000;
 							cop4.lPosX = -3000;
 							cop4.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop5.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop5.active = false;
+							cop5.cAnim[0].posRect.x = -3000;
+							cop5.posT_X = -3000;
+							cop5.lPosX = -3000;
+							cop5.posX = -3000;
+							bibble.bulletList[i].hit = true;
+						}
+						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &cop6.cAnim[0].posRect) && !bibble.bulletList[i].stop) {
+							cop6.active = false;
+							cop6.cAnim[0].posRect.x = -3000;
+							cop6.posT_X = -3000;
+							cop6.lPosX = -3000;
+							cop6.posX = -3000;
 							bibble.bulletList[i].hit = true;
 						}
 						else if (SDL_HasIntersection(&bibble.bulletList[i].posRect, &watcher1.barrelRect) && !bibble.bulletList[i].stop) {
@@ -2320,6 +2350,8 @@ int main(int argc, char* argv[]) {
 				cop2.Update(deltaTime, bibble.posRect);
 				cop3.Update(deltaTime, bibble.posRect);
 				cop4.Update(deltaTime, bibble.posRect);
+				cop5.Update(deltaTime, bibble.posRect);
+				cop6.Update(deltaTime, bibble.posRect);
 
 				// update the watchers
 				watcher1.Update(deltaTime, bibble.posRect);
@@ -2346,6 +2378,10 @@ int main(int argc, char* argv[]) {
 						building14.TankMoveX(-bibble.speed, deltaTime);
 						building15.TankMoveX(-bibble.speed, deltaTime);
 						building16.TankMoveX(-bibble.speed, deltaTime);
+						building17.TankMoveX(-bibble.speed, deltaTime);
+						building18.TankMoveX(-bibble.speed, deltaTime);
+						building19.TankMoveX(-bibble.speed, deltaTime);
+						building20.TankMoveX(-bibble.speed, deltaTime);
 
 						safePlace.TankMoveX(-bibble.speed, deltaTime);
 
@@ -2353,6 +2389,8 @@ int main(int argc, char* argv[]) {
 						cop2.eCopperMoveX(-bibble.speed, deltaTime);
 						cop3.eCopperMoveX(-bibble.speed, deltaTime);
 						cop4.eCopperMoveX(-bibble.speed, deltaTime);
+						cop5.eCopperMoveX(-bibble.speed, deltaTime);
+						cop6.eCopperMoveX(-bibble.speed, deltaTime);
 
 						watcher1.TankMoveX(-bibble.speed, deltaTime);
 						watcher2.TankMoveX(-bibble.speed, deltaTime);
@@ -2397,6 +2435,10 @@ int main(int argc, char* argv[]) {
 						building14.TankMoveX(bibble.speed, deltaTime);
 						building15.TankMoveX(bibble.speed, deltaTime);
 						building16.TankMoveX(bibble.speed, deltaTime);
+						building17.TankMoveX(bibble.speed, deltaTime);
+						building18.TankMoveX(bibble.speed, deltaTime);
+						building19.TankMoveX(bibble.speed, deltaTime);
+						building20.TankMoveX(bibble.speed, deltaTime);
 
 						safePlace.TankMoveX(bibble.speed, deltaTime);
 
@@ -2404,6 +2446,8 @@ int main(int argc, char* argv[]) {
 						cop2.eCopperMoveX(bibble.speed, deltaTime);
 						cop3.eCopperMoveX(bibble.speed, deltaTime);
 						cop4.eCopperMoveX(bibble.speed, deltaTime);
+						cop5.eCopperMoveX(bibble.speed, deltaTime);
+						cop6.eCopperMoveX(bibble.speed, deltaTime);
 
 						watcher1.TankMoveX(bibble.speed, deltaTime);
 						watcher2.TankMoveX(bibble.speed, deltaTime);
@@ -2448,6 +2492,10 @@ int main(int argc, char* argv[]) {
 						building14.TankMoveY(-bibble.speed, deltaTime);
 						building15.TankMoveY(-bibble.speed, deltaTime);
 						building16.TankMoveY(-bibble.speed, deltaTime);
+						building17.TankMoveY(-bibble.speed, deltaTime);
+						building18.TankMoveY(-bibble.speed, deltaTime);
+						building19.TankMoveY(-bibble.speed, deltaTime);
+						building20.TankMoveY(-bibble.speed, deltaTime);
 
 						safePlace.TankMoveY(-bibble.speed, deltaTime);
 
@@ -2455,6 +2503,8 @@ int main(int argc, char* argv[]) {
 						cop2.eCopperMoveY(-bibble.speed, deltaTime);
 						cop3.eCopperMoveY(-bibble.speed, deltaTime);
 						cop4.eCopperMoveY(-bibble.speed, deltaTime);
+						cop5.eCopperMoveY(-bibble.speed, deltaTime);
+						cop6.eCopperMoveY(-bibble.speed, deltaTime);
 
 						watcher1.TankMoveY(-bibble.speed, deltaTime);
 						watcher2.TankMoveY(-bibble.speed, deltaTime);
@@ -2497,6 +2547,10 @@ int main(int argc, char* argv[]) {
 						building14.TankMoveY(bibble.speed, deltaTime);
 						building15.TankMoveY(bibble.speed, deltaTime);
 						building16.TankMoveY(bibble.speed, deltaTime);
+						building17.TankMoveY(bibble.speed, deltaTime);
+						building18.TankMoveY(bibble.speed, deltaTime);
+						building19.TankMoveY(bibble.speed, deltaTime);
+						building20.TankMoveY(bibble.speed, deltaTime);
 
 						safePlace.TankMoveY(bibble.speed, deltaTime);
 
@@ -2504,6 +2558,8 @@ int main(int argc, char* argv[]) {
 						cop2.eCopperMoveY(bibble.speed, deltaTime);
 						cop3.eCopperMoveY(bibble.speed, deltaTime);
 						cop4.eCopperMoveY(bibble.speed, deltaTime);
+						cop5.eCopperMoveY(bibble.speed, deltaTime);
+						cop6.eCopperMoveY(bibble.speed, deltaTime);
 
 						watcher1.TankMoveY(bibble.speed, deltaTime);
 						watcher2.TankMoveY(bibble.speed, deltaTime);
@@ -2541,6 +2597,8 @@ int main(int argc, char* argv[]) {
 				cop2.Draw(renderer);
 				cop3.Draw(renderer);
 				cop4.Draw(renderer);
+				cop5.Draw(renderer);
+				cop6.Draw(renderer);
 
 				// draw the watchers
 				watcher1.Draw(renderer);
@@ -2554,6 +2612,10 @@ int main(int argc, char* argv[]) {
 				building14.Draw(renderer);
 				building15.Draw(renderer);
 				building16.Draw(renderer);
+				building17.Draw(renderer);
+				building18.Draw(renderer);
+				building19.Draw(renderer);
+				building20.Draw(renderer);
 
 				// draw bibble
 				bibble.Draw(renderer);
@@ -2593,7 +2655,8 @@ int main(int argc, char* argv[]) {
 				}
 
 				// check for collisions between bibble and the lights
-				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) || cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center))
+				if (cop1.checkCollision(bibble.posRect, bibble.center) || cop2.checkCollision(bibble.posRect, bibble.center) || cop3.checkCollision(bibble.posRect, bibble.center) || cop4.checkCollision(bibble.posRect, bibble.center)
+					|| cop5.checkCollision(bibble.posRect, bibble.center) || cop6.checkCollision(bibble.posRect, bibble.center))
 				{
 					SDL_Delay(3000);
 					level2 = false;
