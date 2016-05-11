@@ -1224,7 +1224,7 @@ int main(int argc, char* argv[]) {
 	enum GameState { MENU, INSTRUCTIONS, LEVEL1, LEVEL2, BACKSTORY, WIN, LOSE };
 
 	// ***** set up the initial state
-	GameState gameState = LEVEL2;
+	GameState gameState = MENU;
 
 	// bool value to control movement through the states
 	bool menu = false, instructions = false, level1 = false, level2 = false, backStory = false, win = false, lose = false, quit = false;
